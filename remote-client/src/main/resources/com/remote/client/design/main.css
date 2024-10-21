@@ -1,0 +1,31 @@
+.gray-background{
+    -fx-background-color: "#DDDDDD";
+}
+.light-gray-background{
+    -fx-background-color: "#DADADA";
+}
+.cursor{
+    -fx-cursor: hand;
+}
+.nav-btn{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.btn{
+    -fx-background-color: "#6699FF";
+    -fx-cursor: hand;
+}
+.btn:hover{
+    -fx-background-color: "#6699CC";
+}
+.voiceAlert{
+    -fx-background-color: "#FF3333";
+}
+.message-incoming{
+    -fx-background-color: "#FFFFFF";
+    -fx-background-radius: 100px;
+}
+.message-outgoing{
+    -fx-background-color: "#6699FF";
+    -fx-background-radius: 100px;
+}
