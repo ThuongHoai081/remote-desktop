@@ -13,7 +13,7 @@ public class NetworkManager {
     }
 
     public Socket acceptConnection() throws IOException {
-        return serverSocket.accept(); // Chấp nhận kết nối từ client
+        return serverSocket.accept();
     }
 
     public void close() throws IOException {

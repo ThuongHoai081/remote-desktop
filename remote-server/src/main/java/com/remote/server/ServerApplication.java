@@ -10,6 +10,6 @@ public class ServerApplication
 {
     public static void main(String[] args) {
         ServerService serverService = new ServerService();
-        serverService.startServer(); // Bắt đầu server
+        serverService.startServer();
     }
 }

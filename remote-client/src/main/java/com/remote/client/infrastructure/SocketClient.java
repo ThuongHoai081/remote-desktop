@@ -15,10 +15,8 @@ public class SocketClient {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            // Gửi message đến server
             out.println(message);
 
-            // Đọc phản hồi từ server
             String response = in.readLine();
             return response;
         } catch (IOException e) {
