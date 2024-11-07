@@ -1,7 +1,6 @@
 package com.remote.client.presentation;
 
 import com.remote.client.HelloApplication;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -20,14 +19,16 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+import java.net.InetAddress;
 
 public class MainController {
 
     private static final String EMAIL_REGEX = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
+
 
     @FXML
     private AnchorPane login_form;
@@ -88,6 +89,19 @@ public class MainController {
 
     @FXML
     private Label voiceAlert;
+
+    @FXML
+    private TextField yourIP;
+
+
+    public void initialize() {
+        try {
+            InetAddress privateIP = InetAddress.getLocalHost();  // Lấy địa chỉ IP của máy
+            yourIP.setText(privateIP.getHostAddress());  // Gán giá trị IP vào TextField
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
 
     // điều hướng
     @FXML
