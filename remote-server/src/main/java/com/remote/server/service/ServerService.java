@@ -67,7 +67,7 @@ public class ServerService {
         System.out.println("Client status: " + clientStatus + " with Peer ID: " + peerId + " and Session ID: " + sessionId);
 
         ClientHandler clientHandler = new ClientHandler(clientSocket, peerManager, connectionManager);
-        new Thread(clientHandler).start();
+        //new Thread(clientHandler).start();
 
         clientHandler.ResiterSuccess(sessionId, peerId);
 

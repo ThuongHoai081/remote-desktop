@@ -1,27 +1,55 @@
 package com.remote.client.infrastructure;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
-public class SocketClient {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 8080;
+public class SocketClient implements Closeable {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
 
-    public String sendMessage(String message) {
-        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+    public SocketClient()  {
 
-            out.println(message);
+    }
 
-            String response = in.readLine();
-            return response;
+    public SocketClient(String host, int port) throws IOException {
+        connect(host, port);
+    }
+
+    public boolean connect(String host, int port) {
+        try {
+            socket = new Socket(host, port);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return "Error: Unable to connect to server";
+            return false;
+        }
+    }
+
+    public void sendMessage(String message) throws IOException {
+        out.println(message);
+    }
+
+    public String receiveMessage() throws IOException {
+        return in.readLine();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (socket != null && !socket.isClosed()) {
+            socket.close();
+        }
+    }
+
+    public boolean isServerAvailable(String serverIP, int serverPort) {
+        try {
+            Socket testSocket = new Socket(serverIP, serverPort);
+            testSocket.close();
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }

@@ -11,9 +11,10 @@ public class ServiceMessage {
     }
 
     // Phương thức xử lý gửi message tới server
-    public String processMessage(Message message) {
-        // Có thể thêm logic xử lý dữ liệu trước khi gửi, như mã hóa, xác thực, v.v.
-        String response = socketClient.sendMessage(message.getContent());
-        return response;
-    }
+//    public String processMessage(Message message) {
+//        // Có thể thêm logic xử lý dữ liệu trước khi gửi, như mã hóa, xác thực, v.v.
+//        String response = "";
+//                //socketClient.sendMessage(message.getContent());
+//        return response;
+//    }
 }

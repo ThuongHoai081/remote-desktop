@@ -14,9 +14,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
-        clientService = new ClientService();
-        clientService.connectToServer("localhost", 8080);
+        clientService = new ClientService("localhost", 8080);
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 350);

@@ -25,14 +25,15 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            in = new ObjectInputStream(clientSocket.getInputStream());
             out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+
 
             String message;
             while ((message = in.readObject().toString()) != null) {
                 if (message.startsWith("CONNECT_REQUEST")) {
                     processConnectRequest(message);
-                } else {
+                } else if (message.startsWith("P2P_REQUEST")) {
                     out.writeObject("Unknown command: " + message);
                 }
             }
@@ -74,6 +75,8 @@ public class ClientHandler implements Runnable {
 
     void ResiterSuccess(String sessionId, String userId) {
         try {
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+
             out.writeObject("REGISTER_SUCCESS " + userId + " " + sessionId);
         } catch (IOException e) {
             e.printStackTrace();
