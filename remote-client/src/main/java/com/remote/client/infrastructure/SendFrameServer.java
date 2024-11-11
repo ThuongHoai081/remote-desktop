@@ -30,13 +30,12 @@ public class SendFrameServer extends Thread {
             BufferedImage image = robot.createScreenCapture(rect);
             try {
                 SocketServer.getInstance().sendImage(image);
-
             } catch(Exception ex){
                 ex.printStackTrace();
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(50);
             } catch(InterruptedException e){
                 e.printStackTrace();
             }

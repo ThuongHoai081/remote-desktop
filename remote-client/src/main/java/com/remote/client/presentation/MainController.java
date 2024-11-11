@@ -5,29 +5,18 @@ import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,10 +88,32 @@ public class MainController {
 
     public void initialize() {
         try {
-            InetAddress privateIP = InetAddress.getLocalHost();  // Lấy địa chỉ IP của máy
-            yourIP.setText(privateIP.getHostAddress()); // Gán giá trị IP vào TextField
-            System.out.print("IP: " + privateIP + "\n");
-        } catch (UnknownHostException e) {
+            Enumeration<NetworkInterface> networkInterfaces = null;
+            try {
+                networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+
+                    if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
+                        String ipv4Address = inetAddress.getHostAddress();
+                        yourIP.setText(ipv4Address);
+                        System.out.print("IP: " + ipv4Address + "\n");
+                        return;
+                    }
+                }
+            }
+        } catch (SocketException e) {
             e.printStackTrace();
         }
     }
