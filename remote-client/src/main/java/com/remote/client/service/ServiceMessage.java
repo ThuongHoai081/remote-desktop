@@ -6,9 +6,9 @@ import com.remote.client.model.Message;
 public class ServiceMessage {
     private SocketClient socketClient;
 
-    public ServiceMessage() {
+  /*  public ServiceMessage() {
         this.socketClient = new SocketClient();
-    }
+    }*/
 
     // Phương thức xử lý gửi message tới server
 //    public String processMessage(Message message) {

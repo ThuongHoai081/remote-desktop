@@ -4,12 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4c75c09-b9fa-4b4f-a307-271bf334b41e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="c4c75c09-b9fa-4b4f-a307-271bf334b41e" name="Changes" comment="remote feature complete">
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/AuthenticatorClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/AuthenticatorServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/ConnectionInitiatorClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/ConnectionInitiatorServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/EventSenderClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/ReceiveEventsServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/ReceiveFrameClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/SendFrameServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/presentation/ClientFramesViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/presentation/MessageViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/presentation/ScreenViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/ClientFramesView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/MessageView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/ScreenView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/SocketClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/SocketClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/SocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/infrastructure/SocketServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/presentation/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/presentation/MainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/service/ClientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/service/ClientService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/service/ServiceMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/com/remote/client/service/ServiceMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/main.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote-server/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/remote-server/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote-client/src/main/resources/com/remote/client/remote.fxml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,5 +92,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="remote feature complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="remote feature complete" />
   </component>
 </project>

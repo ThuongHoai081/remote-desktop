@@ -10,6 +10,7 @@ module com.remote.client {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires javafx.swing;
 
     opens com.remote.client to javafx.fxml;
     opens com.remote.client.presentation to javafx.fxml;

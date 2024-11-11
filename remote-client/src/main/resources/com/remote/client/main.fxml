@@ -10,19 +10,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
 <StackPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.remote.client.presentation.MainController">
    <children>
-      <AnchorPane prefHeight="300.0" prefWidth="550.0">
+      <AnchorPane fx:id="rootPane" prefHeight="300.0" prefWidth="550.0">
          <children>
             <BorderPane layoutY="8.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <left>
                   <AnchorPane prefHeight="400.0" prefWidth="65.0" styleClass="gray-background" stylesheets="@design/main.css" BorderPane.alignment="CENTER">
                      <children>
-                        <ImageView fx:id="toUser" fitHeight="42.0" fitWidth="46.0" layoutX="12.0" layoutY="142.0" onMouseClicked="#switchForm" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
+                        <ImageView fx:id="toUser" fitHeight="42.0" fitWidth="46.0" layoutX="12.0" layoutY="81.0" onMouseClicked="#switchForm" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
                            <image>
                               <Image url="@image/profile.png" />
                            </image>
@@ -30,11 +29,6 @@
                         <ImageView fx:id="toRemote" fitHeight="42.0" fitWidth="46.0" layoutX="12.0" layoutY="14.0" onMouseClicked="#switchForm" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
                            <image>
                               <Image url="@image/remote-access.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="toMessage" fitHeight="42.0" fitWidth="46.0" layoutX="13.0" layoutY="76.0" onMouseClicked="#switchForm" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
-                           <image>
-                              <Image url="@image/chat.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -45,72 +39,36 @@
                      <children>
                         <AnchorPane fx:id="remote_form" layoutX="104.0" layoutY="67.0" prefHeight="283.0" prefWidth="527.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <Label layoutX="20.0" layoutY="39.0" prefHeight="70.0" prefWidth="231.0" text="Please tell your partner the following IP, Port and Password if you would like allow remote control" wrapText="true">
+                              <Label layoutX="21.0" layoutY="71.0" prefHeight="70.0" prefWidth="231.0" text="Please tell your partner the following IP, Port and Password if you would like allow remote control" wrapText="true">
                                  <font>
                                     <Font name="System Italic" size="12.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="291.0" layoutY="43.0" prefHeight="63.0" prefWidth="227.0" text="Please enter your partner's Ip, Port and Password to remote control your partner's computer" wrapText="true" />
-                              <Line endX="17.0" endY="151.0" layoutX="259.0" layoutY="112.0" startX="17.0" startY="-33.0" />
-                              <TextField fx:id="yourIP" disable="true" layoutX="89.0" layoutY="112.0" />
+                              <Label layoutX="286.0" layoutY="78.0" prefHeight="63.0" prefWidth="227.0" text="Please enter your partner's Ip, Port and Password to remote control your partner's computer" wrapText="true" />
+                              <Line endX="17.0" endY="151.0" layoutX="245.0" layoutY="112.0" startX="17.0" startY="-33.0" />
+                              <TextField fx:id="yourIP" disable="true" layoutX="88.0" layoutY="151.0" />
                               <TextField fx:id="showPassword" layoutX="88.0" layoutY="196.0" visible="false" />
-                              <TextField layoutX="364.0" layoutY="112.0" />
-                              <TextField layoutX="364.0" layoutY="151.0" />
+                              <TextField fx:id="ipAddressTextField" layoutX="359.0" layoutY="151.0" />
                               <Label layoutX="17.0" layoutY="200.0" text="Password:" />
-                              <Label layoutX="17.0" layoutY="116.0" text="Your IP:" />
-                              <Label layoutX="292.0" layoutY="155.0" text="Partner Port:" />
-                              <Label layoutX="292.0" layoutY="116.0" text="Partner IP:" />
-                              <TextField layoutX="88.0" layoutY="155.0" />
-                              <Label layoutX="15.0" layoutY="155.0" text="Your Port:" />
+                              <Label layoutX="21.0" layoutY="155.0" text="Your IP:" />
+                              <Label layoutX="287.0" layoutY="155.0" text="Partner IP:" />
                               <Label layoutX="41.0" layoutY="14.0" text="Allow Remote Control">
                                  <font>
                                     <Font name="System Bold Italic" size="16.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="300.0" layoutY="14.0" text="Control a Remote Computer">
+                              <Label layoutX="296.0" layoutY="14.0" text="Control a Remote Computer">
                                  <font>
                                     <Font name="System Bold Italic" size="16.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="292.0" layoutY="200.0" text="Password:" />
-                              <Button layoutX="366.0" layoutY="233.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" text="Connect to Partner" />
+                              <Label layoutX="287.0" layoutY="200.0" text="Password:" />
+                              <Button fx:id="connectBtn" layoutX="361.0" layoutY="256.0" mnemonicParsing="false" onAction="#submitBtnPressed" prefHeight="30.0" prefWidth="120.0" text="Connect to Partner" />
                               <CheckBox fx:id="checkbox" layoutX="89.0" layoutY="231.0" mnemonicParsing="false" onAction="#changeVisibility" text="Show Password" />
                               <PasswordField fx:id="hiddenPassword" layoutX="88.0" layoutY="196.0" />
-                              <TextField layoutX="364.0" layoutY="196.0" />
-                              <Button layoutX="107.0" layoutY="256.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" text="Update" />
+                              <TextField fx:id="serverPasswordField" layoutX="359.0" layoutY="196.0" />
+                              <Button layoutX="107.0" layoutY="256.0" mnemonicParsing="false" onAction="#PasswordPressed" prefHeight="30.0" prefWidth="120.0" text="Update" />
                            </children></AnchorPane>
-                        <BorderPane fx:id="message_form" layoutX="150.0" layoutY="71.0" prefHeight="363.0" prefWidth="535.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <bottom>
-                              <AnchorPane prefHeight="58.0" prefWidth="535.0" stylesheets="@design/main.css" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <ImageView fitHeight="34.0" fitWidth="55.0" layoutX="11.0" layoutY="13.0" onMouseClicked="#handleSendfile" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
-                                       <image>
-                                          <Image url="@image/photo.png" />
-                                       </image>
-                                    </ImageView>
-                                    <ImageView fx:id="submit" fitHeight="31.0" fitWidth="23.0" layoutX="492.0" layoutY="18.0" onMouseClicked="#handleSendMessage" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
-                                       <image>
-                                          <Image url="@image/send-message.png" />
-                                       </image>
-                                    </ImageView>
-                                    <TextField fx:id="messageInput" layoutX="80.0" layoutY="17.0" prefHeight="25.0" prefWidth="404.0" />
-                                    <ImageView fitHeight="24.0" fitWidth="25.0" layoutX="50.0" layoutY="18.0" onMousePressed="#OnMousePressed" onMouseReleased="#OnMouseReleased" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
-                                       <image>
-                                          <Image url="@image/microphone.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label fx:id="voiceAlert" alignment="CENTER" layoutX="169.0" layoutY="1.0" prefHeight="35.0" prefWidth="148.0" styleClass="voiceAlert" stylesheets="@design/main.css" text="Giữ chuột để bắt đầu" textFill="WHITE" visible="false">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </AnchorPane>
-                           </bottom>
-                           <center>
-                              <VBox fx:id="messageContainer" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
-                           </center>
-                        </BorderPane>
                         <AnchorPane fx:id="login_form" layoutX="110.0" layoutY="70.0" prefHeight="363.0" prefWidth="535.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <Label layoutX="225.0" layoutY="58.0" text="Login">

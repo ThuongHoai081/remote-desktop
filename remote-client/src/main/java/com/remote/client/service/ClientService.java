@@ -1,7 +1,6 @@
 package com.remote.client.service;
 
 import com.remote.client.infrastructure.SocketClient;
-import com.remote.client.infrastructure.SocketServer;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ public class ClientService {
         this.isServerAvailable = socketClient.isServerAvailable(serverIP, serverPort);
     }
 
-    public void startClient() throws IOException {
+   /* public void startClient() throws IOException {
         if (isServerAvailable) {
             socketClient.sendMessage("Hello from client to server");
             String response = socketClient.receiveMessage();
@@ -30,7 +29,7 @@ public class ClientService {
 
         SocketServer fallbackServer = new SocketServer(fallbackPort);
         fallbackServer.startListening();
-    }
+    }*/
 
     public void closeConnection() throws IOException {
         socketClient.close();
