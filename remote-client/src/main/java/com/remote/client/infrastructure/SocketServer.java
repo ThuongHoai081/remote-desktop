@@ -51,15 +51,4 @@ public class SocketServer {
             return null;
         }
     }
-
-    /*public void startListening() throws IOException {
-        while (true) {
-            Socket socket = serverSocket.accept();
-            new PeerHandle(socket).start();
-        }
-    }
-
-    public void close() throws IOException {
-        serverSocket.close();
-    }*/
 }

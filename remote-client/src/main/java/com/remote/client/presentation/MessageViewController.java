@@ -1,6 +1,9 @@
 package com.remote.client.presentation;
 
 import com.remote.client.HelloApplication;
+import com.remote.client.model.Message;
+import com.remote.client.service.ServiceMessage;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -21,13 +24,18 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 public class MessageViewController {
     @FXML
     private ImageView logOut;
 
     @FXML
-    private VBox messageContainer;
+    private static VBox messageContainer;
 
     @FXML
     private TextField messageInput;
@@ -44,18 +52,69 @@ public class MessageViewController {
     @FXML
     private Label voiceAlert;
 
+    private String yourIP;
+
+    private ServiceMessage serviceMessage;
+
+
+
+    public void initialize() throws IOException {
+
+        serviceMessage = new ServiceMessage();
+
+        // Hiển thị vai trò trên giao diện
+        String role = serviceMessage.isClientMode() ? "Client" : "Server";
+        System.out.println("Running as: " + role);
+
+        new Thread(this::listenForMessages).start();
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = null;
+            try {
+                networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+
+                    if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
+                        yourIP = inetAddress.getHostAddress();
+                        return;
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listenForMessages() {
+        while (true) {
+            String receivedMessage = serviceMessage.receiveMessage();
+            if (receivedMessage.startsWith("CHAT:")){
+                String content = receivedMessage.substring(4);
+                Platform.runLater(() -> addIncomingMessage(content));
+            }
+        }
+    }
 
     @FXML
-    private void handleSendMessage() {
+    private void handleSendMessage() throws IOException {
         // Lấy nội dung tin nhắn từ TextField
         String messageText = messageInput.getText();
         if (!messageText.isEmpty()) {
-            // Thêm tin nhắn của người dùng (outgoing message)
+            Message message = new Message(messageText,yourIP);
+            serviceMessage.sendMessage(messageText);
             addOutgoingMessage(messageText);
-
-            // Mô phỏng tin nhắn phản hồi (incoming message)
-            addIncomingMessage("This is an auto-response.");
-
             // Xóa TextField sau khi gửi
             messageInput.clear();
         }
@@ -159,7 +218,7 @@ public class MessageViewController {
     }
 
     @FXML
-    private void addOutgoingMessage(String message) {
+    public static void addOutgoingMessage(String message) {
         HBox messageBox = new HBox();
         messageBox.setAlignment(Pos.CENTER_RIGHT);
         messageBox.setStyle("-fx-padding: 10;");
@@ -173,7 +232,7 @@ public class MessageViewController {
     }
     // hiện tin nhắn của đối phương
     @FXML
-    private void addIncomingMessage(String message) {
+    public static void addIncomingMessage(String message) {
         HBox messageBox = new HBox();
         messageBox.setAlignment(Pos.CENTER_LEFT);
         messageBox.setStyle("-fx-padding: 10;");
