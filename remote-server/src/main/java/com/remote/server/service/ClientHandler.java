@@ -3,18 +3,20 @@ package com.remote.server.service;
 import com.remote.server.infrastructure.ConnectionManager;
 import com.remote.server.infrastructure.PeerManager;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private final PeerManager peerManager;
     private final ConnectionManager connectionManager;
 
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+//    private ObjectInputStream in;
+//    private ObjectOutputStream out;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public ClientHandler(Socket socket, PeerManager peerManager, ConnectionManager connectionManager) {
         this.clientSocket = socket;
@@ -25,16 +27,39 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
+//            out = new ObjectOutputStream(clientSocket.getOutputStream());
+//            in = new ObjectInputStream(clientSocket.getInputStream());
+            out = new DataOutputStream(clientSocket.getOutputStream());
+            in = new DataInputStream(clientSocket.getInputStream());
 
 
-            String message;
-            while ((message = in.readObject().toString()) != null) {
-                if (message.startsWith("CONNECT_REQUEST")) {
-                    processConnectRequest(message);
-                } else if (message.startsWith("P2P_REQUEST")) {
-                    out.writeObject("Unknown command: " + message);
+//            String message;
+//            while ((message = in.readObject().toString()) != null) {
+//                if (message.startsWith("REGISTER")) {
+//                    handleRegister(message);
+//                  //  processConnectRequest(message);
+//                } else if (message.startsWith("P2P_REQUEST")) {
+//                    out.writeObject("Unknown command: " + message);
+//                }
+//            }
+            while (true) {
+                if (clientSocket != null && clientSocket.isConnected()) {
+                    String command = in.readUTF();
+                    System.out.println("Received request:" + command);
+                    switch (command.toUpperCase()) {
+                        case "REGISTER":
+                            handleRegister(in, out);
+                            break;
+                        case "LOGIN":
+                            handleLogin(in, out);
+                            break;
+                        case "DISCONNECT":
+                            System.out.println("Client requested disconnect.");
+                            clientSocket.close();
+                            return;
+                        default:
+                            System.out.println("Unknown command received: " + command);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -47,44 +72,50 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
-    private void processConnectRequest(String message) {
+    public void handleRegister(DataInputStream inputStream, DataOutputStream outputStream) {
         try {
-            String[] parts = message.split(" ");
-            if (parts.length == 3) {
-                String targetId = parts[1];
-                String password = parts[2];
-                String sessionId = parts[3];
-
-                // Gọi `ConnectionManager` để xác thực và kết nối
-                boolean isConnected = connectionManager.connectWithPassword(targetId, password, sessionId);
-
-                if (isConnected) {
-                    out.writeObject("AUTH_RESPONSE SUCCESS");
-                } else {
-                    out.writeObject("AUTH_RESPONSE FAILURE");
-                }
-
-            } else {
-                out.writeObject("Invalid connect request format. Use: CONNECT_REQUEST <TargetID> <Password>");
+            String clientIp= inputStream.readUTF();
+            String clientEmail= inputStream.readUTF();
+            String clientUsername= inputStream.readUTF();
+            String clientPassword = inputStream.readUTF();
+            boolean checkRegister = peerManager.registerPeer(clientIp, clientEmail, clientUsername, clientPassword);
+            System.out.println("Received REGISTER request:");
+            System.out.println("Ip: " + clientIp);
+            System.out.println("Email: " + clientEmail);
+            System.out.println("Password: " + clientPassword);
+            if(checkRegister == true) {
+                sendResponse(outputStream, "success");
+            }else{
+                sendResponse(outputStream, "false");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    void ResiterSuccess(String sessionId, String userId) {
+    public void handleLogin(DataInputStream inputStream, DataOutputStream outputStream) {
         try {
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
+            String clientIp= inputStream.readUTF();
+            String clientEmail= inputStream.readUTF();
+            String clientPassword = inputStream.readUTF();
+            boolean checkLogin = peerManager.loginPeer(clientIp, clientEmail, clientPassword);
+            System.out.println("Received Login request:");
+            System.out.println("Email: " + clientEmail);
+            System.out.println("Password: " + clientPassword);
+            if(checkLogin == true){
+                sendResponse(outputStream, "success");
+            }else{
+                sendResponse(outputStream, "false");
+            }
 
-            out.writeObject("REGISTER_SUCCESS " + userId + " " + sessionId);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private void sendResponse(String message) {
+
+    private void sendResponse(DataOutputStream outputStream, String message) {
         try {
-            out.writeObject(message);
+            outputStream.writeUTF(message);
         } catch (IOException e) {
             e.printStackTrace();
         }
