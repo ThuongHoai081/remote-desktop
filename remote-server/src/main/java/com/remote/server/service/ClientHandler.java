@@ -27,21 +27,9 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-//            out = new ObjectOutputStream(clientSocket.getOutputStream());
-//            in = new ObjectInputStream(clientSocket.getInputStream());
             out = new DataOutputStream(clientSocket.getOutputStream());
             in = new DataInputStream(clientSocket.getInputStream());
 
-
-//            String message;
-//            while ((message = in.readObject().toString()) != null) {
-//                if (message.startsWith("REGISTER")) {
-//                    handleRegister(message);
-//                  //  processConnectRequest(message);
-//                } else if (message.startsWith("P2P_REQUEST")) {
-//                    out.writeObject("Unknown command: " + message);
-//                }
-//            }
             while (true) {
                 if (clientSocket != null && clientSocket.isConnected()) {
                     String command = in.readUTF();
