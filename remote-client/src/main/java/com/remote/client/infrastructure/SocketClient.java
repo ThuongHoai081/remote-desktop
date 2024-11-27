@@ -79,8 +79,8 @@ public class SocketClient implements Closeable {
     public boolean connect(String host, int port) {
         try {
             socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,11 +89,11 @@ public class SocketClient implements Closeable {
     }
 
     public void sendMessageToServer(String message) throws IOException {
-        out.println(message);
+        outputStream.writeUTF(message);
     }
 
     public String receiveMessageToServer() throws IOException {
-        return in.readLine();
+        return inputStream.readUTF();
     }
 
     @Override

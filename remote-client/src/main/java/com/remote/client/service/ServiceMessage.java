@@ -16,6 +16,7 @@ public class ServiceMessage {
             socketServer = SocketServer.getInstance();
             isClientMode = false; // Nếu khởi động server thành công, đây là server
         } catch (IOException e) {
+            socketClient = SocketClient.getInstance();
             isClientMode = true; // Nếu không thể khởi động server, đây là client
         }
     }

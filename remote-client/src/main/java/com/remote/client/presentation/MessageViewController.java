@@ -100,7 +100,7 @@ public class MessageViewController {
     private void listenForMessages() {
         while (true) {
             String receivedMessage = serviceMessage.receiveMessage();
-            if (receivedMessage.startsWith("CHAT:")){
+            if ( receivedMessage !=null &&  receivedMessage.startsWith("CHAT:")){
                 String content = receivedMessage.substring(4);
                 Platform.runLater(() -> addIncomingMessage(content));
             }
