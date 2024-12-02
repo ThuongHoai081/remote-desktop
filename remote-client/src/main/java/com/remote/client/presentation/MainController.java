@@ -3,6 +3,8 @@ package com.remote.client.presentation;
 import com.remote.client.HelloApplication;
 import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
+import com.remote.client.infrastructure.SocketClient;
+import com.remote.client.service.ClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -86,8 +88,11 @@ public class MainController {
     @FXML
     private Button connectBtn;
 
+    private ClientService clientService;
+
     public void initialize() {
         try {
+            clientService = new ClientService("localhost", 1234);
             Enumeration<NetworkInterface> networkInterfaces = null;
             try {
                 networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -115,6 +120,8 @@ public class MainController {
             }
         } catch (SocketException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -155,6 +162,7 @@ public class MainController {
     // đi đến màn hình chờ máy khác kết nối
     @FXML
     private void PasswordPressed() throws IOException {
+
         String password = hiddenPassword.getText();
         System.out.println("Password is " + password);
 
@@ -173,10 +181,12 @@ public class MainController {
 
         ConnectionInitiatorClient connInit = ConnectionInitiatorClient.getInstance(serverIp);
 
+        System.out.println(serverIp);
         // kiểm tra password
         if(connInit.checkPassword(password)) {
 
             Parent pane = FXMLLoader.load(HelloApplication.class.getResource("ClientFramesView.fxml"));
+
 
             Stage mainStage = (Stage) connectBtn.getScene().getWindow();
             mainStage.close();
@@ -187,18 +197,18 @@ public class MainController {
             stage.setTitle("Connected to " + serverIp);
             stage.show();
 
-           /* Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
-            Stage messageStage = new Stage();
-            Scene messageScene = new Scene(messagePane);
-            messageStage.setScene(messageScene);
-            messageStage.setTitle("Messages");
-            messageStage.show();*/
+//            Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
+//            Stage messageStage = new Stage();
+//            Scene messageScene = new Scene(messagePane);
+//            messageStage.setScene(messageScene);
+//            messageStage.setTitle("Messages");
+//            messageStage.show();
         }
     }
 
-    //xử lý đăng nhập
     @FXML
-    public void handleLoign(){
+    public void handleLogin(){
+        String ip = yourIP.getText();
         String email = emailLogin.getText();
         String password = passwordLogin.getText();
 
@@ -207,9 +217,7 @@ public class MainController {
             return;
         }
 
-        // Giả sử kiểm tra email và mật khẩu từ cơ sở dữ liệu
-        boolean isLoginSuccessful = checkLogin(email, password);
-
+        boolean isLoginSuccessful = clientService.sendToServer("LOGIN",ip, email, password);
 
         if (isLoginSuccessful) {
             showAlert("Success", "Đăng nhập thành công");
@@ -218,13 +226,9 @@ public class MainController {
         }
     }
 
-    private boolean checkLogin(String email, String password) {
-        // Kiểm tra email và password có khớp trong DB không
-        return "user@example.com".equals(email) && "password123".equals(password);
-    }
-    //xử lý đăng ký
     @FXML
     public void handleSignup() {
+        String ip = yourIP.getText();
         String email = emailSignup.getText();
         String password = passwordSignup.getText();
         String username = usernameSignup.getText();
@@ -234,17 +238,16 @@ public class MainController {
             return;
         }
 
-        // Kiểm tra các điều kiện với Regex
         if (!validateEmail(email)) {
             showAlert("Error", "Email không hợp lệ");
             return;
         }
 
-        // Nếu tất cả đều hợp lệ, tiến hành đăng ký
+        clientService.sendToServer("REGISTER", ip, email, username, password);
+
         showAlert("Success", "Đăng ký thành công");
     }
 
-    // Phương thức kiểm tra email
     private boolean validateEmail(String email) {
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
         Matcher matcher = pattern.matcher(email);

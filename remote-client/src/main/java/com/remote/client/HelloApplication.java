@@ -10,11 +10,8 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
 
-    private ClientService clientService;
-
     @Override
     public void start(Stage stage) throws IOException {
-        //clientService = new ClientService("localhost", 8080);
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 350);
@@ -24,13 +21,6 @@ public class HelloApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-    }
-    @Override
-    public void stop() throws Exception {
-        if (clientService != null) {
-            clientService.closeConnection();
-        }
-        super.stop();
     }
     public static void main(String[] args) {
         launch();

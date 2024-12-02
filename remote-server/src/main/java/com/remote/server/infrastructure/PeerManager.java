@@ -1,8 +1,7 @@
 package com.remote.server.infrastructure;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remote.server.model.PeerInfo;
 
-import com.remote.server.model.User;
-
-import java.util.UUID;
 import java.util.Random;
 
 public class PeerManager {
@@ -15,50 +14,44 @@ public class PeerManager {
         }
     }
 
-    public String registerPeer(String connectionDetails) {
-        String peerId = redisUtils.getPeerInfo(connectionDetails + "_id");
+    public boolean registerPeer(String ip, String email, String username, String password) {
+        if (email == null || email.isEmpty() || username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            System.out.println("Thông tin không được để trống.");
+            return false;
+        }
 
-        if (peerId == null) {
-            peerId = UUID.randomUUID().toString();
-            String password = generateRandomPassword(6);
+        if (redisUtils.isMemberOfSet("activePeers", ip)) {
+            System.out.println("Peer với IP " + ip + " đã tồn tại.");
+            return false;
+        }
+        PeerInfo peerInfo = new PeerInfo(email, username, password);
+        redisUtils.hset(ip, "email", peerInfo.getEmail());
+        redisUtils.hset(ip, "username", peerInfo.getUsername());
+        redisUtils.hset(ip, "password", peerInfo.getPassword());
+        redisUtils.addToSet("activePeers", ip);
 
-            redisUtils.setPeerInfo(connectionDetails + "_id", peerId);
-            redisUtils.setPeerInfo(peerId + "_details", connectionDetails);
-            redisUtils.setPeerInfo(peerId + "_password", password);
-            redisUtils.addToSet("activePeers", peerId);
-            System.out.println("Peer ID mới: " + peerId + ", IP: " + connectionDetails + ", Mật khẩu: " + password);
+        System.out.println("Peer mới đăng ký: email: " + email + ", Mật khẩu: " + password);
+        return true;
+    }
+
+    public boolean loginPeer(String ip, String email, String password) {
+        String storedEmail = redisUtils.hget(ip, "email");
+        String storedPassword = redisUtils.hget(ip, "password");
+
+        if (storedEmail == null || storedPassword == null) {
+            System.out.println("Thông tin đăng nhập không tồn tại cho Peer: " + ip);
+            return false;
+        }
+
+        if (storedEmail.equals(email) && storedPassword.equals(password)) {
+            System.out.println("Đăng nhập thành công cho Peer: " + ip);
+            return true;
         } else {
-            String password = redisUtils.getPeerInfo(peerId + "_password");
-            System.out.println("Peer ID cố định: " + peerId + ", IP: " + connectionDetails + ", Mật khẩu: " + password);
+            System.out.println("Thông tin đăng nhập sai cho Peer: " + ip);
+            return false;
         }
-
-        return peerId;
     }
 
 
-    private String generateRandomPassword(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random rnd = new Random();
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-
-    public void unregisterPeer(String peerId) {
-        redisUtils.removePeer(peerId + "_details");
-        redisUtils.removePeer(peerId + "_password");
-        redisUtils.removeFromSet("activePeers", peerId);
-        System.out.println("Peer " + peerId + " đã hủy đăng ký.");
-    }
-
-    public void establishP2PConnection(String clientAId, String clientBId) {
-        System.out.println("Establishing P2P connection between " + clientAId + " and " + clientBId);
-    }
-
-    public void closeP2PConnection(String clientAId, String clientBId) {
-        System.out.println("Closing P2P connection between " + clientAId + " and " + clientBId);
-    }
 }
 
