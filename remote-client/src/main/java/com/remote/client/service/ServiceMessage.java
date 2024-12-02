@@ -1,22 +1,23 @@
 package com.remote.client.service;
 
-import com.remote.client.infrastructure.SocketClient;
-import com.remote.client.infrastructure.SocketServer;
-import com.remote.client.model.Message;
+import com.remote.client.infrastructure.ConnectionInitiatorClient;
+import com.remote.client.infrastructure.ConnectionInitiatorServer;
 
 import java.io.IOException;
 
 public class ServiceMessage {
     private boolean isClientMode;
-    private static SocketClient socketClient;
-    private static SocketServer socketServer;
 
-    public ServiceMessage() throws IOException {
-        try {
-            socketServer = SocketServer.getInstance();
-            isClientMode = false; // Nếu khởi động server thành công, đây là server
-        } catch (IOException e) {
-            isClientMode = true; // Nếu không thể khởi động server, đây là client
+    public ConnectionInitiatorClient connectClient;
+    public ConnectionInitiatorServer connectServer;
+
+    public ServiceMessage(){
+        connectServer = ConnectionInitiatorServer.getInstance();
+        if(connectServer == null){
+            connectClient = ConnectionInitiatorClient.getInstance();
+            isClientMode = true;
+        } else{
+            isClientMode = false;
         }
     }
 
@@ -24,20 +25,12 @@ public class ServiceMessage {
         return isClientMode;
     }
 
-    public void connectToServer(String serverIp) {
-        if (isClientMode) {
-            socketClient = SocketClient.getInstance(serverIp);
-            System.out.println("Connected as client to " + serverIp);
-        }
-    }
-
-
     public void sendMessage(String message) {
         try {
-            if (isClientMode && socketClient != null) {
-                socketClient.sendMessage("CHAT:" + message);
-            } else if (!isClientMode && socketServer != null) {
-                socketServer.sendMessage("CHAT:" + message);
+            if (isClientMode && connectClient != null) {
+                connectClient.sendMessage("CHAT:" + message);
+            } else if (!isClientMode && connectServer != null) {
+                connectServer.sendMessage("CHAT:" + message);
             }
         } catch (IOException e) {
             System.err.println("Error sending message: " + e.getMessage());
@@ -46,40 +39,20 @@ public class ServiceMessage {
 
     public String receiveMessage() {
         try {
-            if (isClientMode && socketClient != null) {
-                return socketClient.getMessage();
-            } else if (!isClientMode && socketClient != null) {
-                return socketServer.getMessage();
+            if (isClientMode && connectClient != null) {
+                String receivedMessage = connectClient.getMessage();
+                if (receivedMessage != null && receivedMessage.startsWith("CHAT:")){
+                    return receivedMessage.substring(4);
+                }
+            } else if (!isClientMode && connectServer != null) {
+                String receivedMessage = connectServer.getMessage();
+                if (receivedMessage != null && receivedMessage.startsWith("CHAT:")){
+                    return receivedMessage.substring(4);
+                }
             }
         } catch (Exception e) {
             System.err.println("Error receiving message: " + e.getMessage());
         }
         return null;
-    }
-
-    public static void sendMessageClient(Message message) throws IOException {
-        socketClient.sendMessage("MSG" + message.getContent());
-    }
-
-    public String receiveMessageClient() {
-        String message = socketClient.getMessage();
-        if (message.startsWith("MSG")){
-            return message.substring(3);
-        } else {
-            return null;
-        }
-    }
-
-    public void sendMessageServer(Message message) {
-        socketServer.sendMessage("MSG" + message.getContent());
-    }
-
-    public String receiveMessageServer() {
-        String message = socketServer.getMessage();
-        if (message.startsWith("MSG")){
-            return message.substring(3);
-        } else {
-            return null;
-        }
     }
 }

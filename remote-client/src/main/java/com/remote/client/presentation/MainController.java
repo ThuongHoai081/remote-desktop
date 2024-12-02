@@ -173,12 +173,10 @@ public class MainController {
 
         ConnectionInitiatorClient connInit = ConnectionInitiatorClient.getInstance(serverIp);
 
-        System.out.println(serverIp);
         // kiểm tra password
         if(connInit.checkPassword(password)) {
 
             Parent pane = FXMLLoader.load(HelloApplication.class.getResource("ClientFramesView.fxml"));
-
 
             Stage mainStage = (Stage) connectBtn.getScene().getWindow();
             mainStage.close();
@@ -189,12 +187,12 @@ public class MainController {
             stage.setTitle("Connected to " + serverIp);
             stage.show();
 
-            Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
+           /* Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
             Stage messageStage = new Stage();
             Scene messageScene = new Scene(messagePane);
             messageStage.setScene(messageScene);
             messageStage.setTitle("Messages");
-            messageStage.show();
+            messageStage.show();*/
         }
     }
 

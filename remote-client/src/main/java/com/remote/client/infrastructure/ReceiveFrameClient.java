@@ -18,15 +18,26 @@ public class ReceiveFrameClient extends Thread {
     }
 
     public void run() {
-
-        try {
-            while (true) {
+        while (true) {
+            try {
                 BufferedImage image = SocketClient.getInstance().getImage();
-                WritableImage imageFx = SwingFXUtils.toFXImage(image, null);
-                this.imageView.setImage(imageFx);
+                if (image != null) {
+                    WritableImage imageFx = SwingFXUtils.toFXImage(image, null);
+                    this.imageView.setImage(imageFx);
+
+                } else {
+                    System.err.println("Received null image.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Error while receiving or processing image: " + ex.getMessage());
+                try {
+                    Thread.sleep(100); // Chờ 100ms trước khi thử lại
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Khôi phục trạng thái ngắt của luồng
+                    break; // Thoát vòng lặp nếu luồng bị ngắt
+                }
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
+
 }

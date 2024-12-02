@@ -1,7 +1,6 @@
 package com.remote.client.presentation;
 
 import com.remote.client.HelloApplication;
-import com.remote.client.model.Message;
 import com.remote.client.service.ServiceMessage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,10 +20,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -35,7 +31,7 @@ public class MessageViewController {
     private ImageView logOut;
 
     @FXML
-    private static VBox messageContainer;
+    private VBox messageContainer;
 
     @FXML
     private TextField messageInput;
@@ -58,61 +54,55 @@ public class MessageViewController {
 
 
 
-    public void initialize() throws IOException {
+    public void initialize() {
 
         serviceMessage = new ServiceMessage();
-
-        // Hiển thị vai trò trên giao diện
         String role = serviceMessage.isClientMode() ? "Client" : "Server";
         System.out.println("Running as: " + role);
-
-        new Thread(this::listenForMessages).start();
+      //  new Thread(this::listenForMessages).start();
 
         try {
-            Enumeration<NetworkInterface> networkInterfaces = null;
-            try {
-                networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            } catch (SocketException e) {
-                throw new RuntimeException(e);
-            }
+            yourIP = findLocalIPAddress();
+        } catch (SocketException e) {
+            System.err.println("Không thể lấy địa chỉ IP: " + e.getMessage());
+        }
 
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
+    }
+    private String findLocalIPAddress() throws SocketException {
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 
-                if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
+        while (networkInterfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = networkInterfaces.nextElement();
 
-                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
 
-                while (addresses.hasMoreElements()) {
-                    InetAddress inetAddress = addresses.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
 
-                    if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
-                        yourIP = inetAddress.getHostAddress();
-                        return;
-                    }
+            while (addresses.hasMoreElements()) {
+                InetAddress inetAddress = addresses.nextElement();
+
+                if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
+                    return inetAddress.getHostAddress();
                 }
             }
-        } catch (SocketException e) {
-            e.printStackTrace();
         }
+        throw new SocketException("Không tìm thấy địa chỉ IP hợp lệ.");
     }
 
     private void listenForMessages() {
         while (true) {
             String receivedMessage = serviceMessage.receiveMessage();
-            if (receivedMessage.startsWith("CHAT:")){
-                String content = receivedMessage.substring(4);
-                Platform.runLater(() -> addIncomingMessage(content));
+            if(receivedMessage != null ){
+                Platform.runLater(() -> addIncomingMessage(receivedMessage));
             }
         }
     }
 
     @FXML
-    private void handleSendMessage() throws IOException {
+    private void handleSendMessage(){
         // Lấy nội dung tin nhắn từ TextField
         String messageText = messageInput.getText();
         if (!messageText.isEmpty()) {
-            Message message = new Message(messageText,yourIP);
             serviceMessage.sendMessage(messageText);
             addOutgoingMessage(messageText);
             // Xóa TextField sau khi gửi
@@ -218,7 +208,7 @@ public class MessageViewController {
     }
 
     @FXML
-    public static void addOutgoingMessage(String message) {
+    public void addOutgoingMessage(String message) {
         HBox messageBox = new HBox();
         messageBox.setAlignment(Pos.CENTER_RIGHT);
         messageBox.setStyle("-fx-padding: 10;");
@@ -232,7 +222,7 @@ public class MessageViewController {
     }
     // hiện tin nhắn của đối phương
     @FXML
-    public static void addIncomingMessage(String message) {
+    public void addIncomingMessage(String message) {
         HBox messageBox = new HBox();
         messageBox.setAlignment(Pos.CENTER_LEFT);
         messageBox.setStyle("-fx-padding: 10;");

@@ -1,5 +1,12 @@
 package com.remote.client.infrastructure;
 
+import com.remote.client.HelloApplication;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 import java.awt.*;
 import java.io.IOException;
 
@@ -7,7 +14,6 @@ public class ConnectionInitiatorServer {
     private static ConnectionInitiatorServer instance = null;
     private SocketServer socket;
     private String serverPassword;
-    private Boolean connected = false;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -30,7 +36,7 @@ public class ConnectionInitiatorServer {
     public void initiateConnection() throws IOException {
         socket = SocketServer.getInstance();
         AuthenticatorServer auth = new AuthenticatorServer(socket, serverPassword);
-        System.out.println("ServerPassword" + serverPassword);
+        System.out.println("ServerPassword:" + serverPassword);
         while(!auth.isValid()) {
             socket.sendMessage("invalid");
         }
@@ -45,6 +51,19 @@ public class ConnectionInitiatorServer {
         Rectangle rect = new Rectangle(dim);
         new SendFrameServer(rect);
         new ReceiveEventsServer();
+
+        Platform.runLater(() -> {
+            try {
+                Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
+                Stage messageStage = new Stage();
+                Scene messageScene = new Scene(messagePane);
+                messageStage.setScene(messageScene);
+                messageStage.setTitle("Messages");
+                messageStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     String getWidth() {
@@ -54,7 +73,11 @@ public class ConnectionInitiatorServer {
         return Double.toString(dim.getHeight());
     }
 
-    public Boolean isConnected () {
-        return connected;
+    public void sendMessage(String message) throws IOException {
+        socket.sendMessage(message);
+    }
+
+    public String getMessage() throws IOException {
+        return socket.getMessage();
     }
 }

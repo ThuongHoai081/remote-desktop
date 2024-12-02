@@ -25,6 +25,8 @@ public class SocketClient implements Closeable {
             socket = new Socket(serverIp, port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
+           // out = new PrintWriter(socket.getOutputStream(), true);
+            //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             correctIP = true;
         } catch (IOException e) {
             System.out.println("Failed connection.");
@@ -88,14 +90,6 @@ public class SocketClient implements Closeable {
         }
     }
 
-    public void sendMessageToServer(String message) throws IOException {
-        out.println(message);
-    }
-
-    public String receiveMessageToServer() throws IOException {
-        return in.readLine();
-    }
-
     @Override
     public void close() throws IOException {
         if (socket != null && !socket.isClosed()) {
@@ -111,5 +105,13 @@ public class SocketClient implements Closeable {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    public void sendMessageToServer(String message) {
+        out.println(message);
+    }
+
+    public String receiveMessageToServer() throws IOException {
+        return in.readLine();
     }
 }
