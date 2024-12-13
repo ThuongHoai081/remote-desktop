@@ -7,69 +7,94 @@ import java.net.*;
 
 public class SocketServer implements Closeable {
     private static SocketServer instance = null;
+    private static SocketServer chatInstance = null;
 
-    private int port = 4907;
+    private int port;
     private ServerSocket serverSocket;
-
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
 
-    private PrintWriter out;
-    private BufferedReader in;
-
+    // Khởi tạo kết nối server
     public SocketServer() throws IOException {
-        System.out.println("Waiting for Accept");
-        serverSocket = new ServerSocket(port);
-        socket = serverSocket.accept();
-        System.out.println("Accept finished");
-        inputStream = new DataInputStream(socket.getInputStream());
-        outputStream = new DataOutputStream(socket.getOutputStream());
-       // out = new PrintWriter(socket.getOutputStream(), true);
-       // in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this(4907); // Mặc định sử dụng cổng 4907
     }
 
-    public static SocketServer getInstance () throws IOException {
+    // Khởi tạo kết nối server với cổng cụ thể
+    public SocketServer(int port) throws IOException {
+        this.port = port;
+        System.out.println("Waiting for Accept on port " + port);
+        serverSocket = new ServerSocket(port);
+        socket = serverSocket.accept();
+        System.out.println("Accept finished on port " + port);
+        inputStream = new DataInputStream(socket.getInputStream());
+        outputStream = new DataOutputStream(socket.getOutputStream());
+    }
+
+    // Lấy instance của SocketServer cho cổng chính
+    public static SocketServer getInstance() throws IOException {
         if (instance == null) {
-            instance = new SocketServer();
+            instance = new SocketServer(); // Sử dụng cổng mặc định
         }
         return instance;
     }
 
+    // Lấy instance của SocketServer cho cổng chat
+    public static SocketServer getChatInstance(int port) {
+        if (chatInstance == null) {
+            try {
+                chatInstance = new SocketServer(port); // Truyền cổng cho kết nối chat
+            } catch (IOException e) {
+                throw new RuntimeException("Error creating chat socket: " + e.getMessage(), e);
+            }
+        }
+        return chatInstance;
+    }
+
+    // Gửi thông điệp qua kết nối
     public void sendMessage(String message) {
         try {
             outputStream.writeUTF(message);
         } catch (IOException e) {
+            System.err.println("Error sending message: " + e.getMessage());
         }
     }
 
+    // Gửi hình ảnh qua kết nối
     public void sendImage(BufferedImage image) {
         try {
             ImageIO.write(image, "jpeg", socket.getOutputStream());
         } catch (IOException e) {
+            System.err.println("Error sending image: " + e.getMessage());
         }
     }
 
+    // Nhận thông điệp từ kết nối
     public String getMessage() {
         try {
             return inputStream.readUTF();
         } catch (IOException e) {
+            System.err.println("Error receiving message: " + e.getMessage());
             return null;
         }
     }
+
+    // Đóng kết nối
     @Override
     public void close() throws IOException {
         if (serverSocket != null && !serverSocket.isClosed()) {
             serverSocket.close();
             instance = null;
+            chatInstance = null;
+            System.out.println("SocketServer closed");
         }
     }
 
-    public void sendMessageToServer(String message) {
-        out.println(message);
-    }
-
-    public String receiveMessageToServer() throws IOException {
-        return in.readLine();
+    // Đảm bảo cổng chat được mở
+    public void closeChatSocket() throws IOException {
+        if (chatInstance != null) {
+            chatInstance.close();
+            chatInstance = null;
+        }
     }
 }

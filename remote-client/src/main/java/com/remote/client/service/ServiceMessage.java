@@ -28,9 +28,9 @@ public class ServiceMessage {
     public void sendMessage(String message) {
         try {
             if (isClientMode && connectClient != null) {
-                connectClient.sendMessage("CHAT:" + message);
+                connectClient.sendChatMessage("CHAT:" + message);
             } else if (!isClientMode && connectServer != null) {
-                connectServer.sendMessage("CHAT:" + message);
+                connectServer.sendChatMessage("CHAT:" + message);
             }
         } catch (IOException e) {
             System.err.println("Error sending message: " + e.getMessage());

@@ -19,7 +19,8 @@ public class SocketClient implements Closeable {
 
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
-
+    private static SocketClient chatInstance = null;
+    private static SocketClient streamingInstance = null;
     public SocketClient(String serverIp)  {
         try {
             socket = new Socket(serverIp, port);
@@ -73,6 +74,17 @@ public class SocketClient implements Closeable {
             return null;
         }
     }
+    public static SocketClient getChatInstance(String serverIp, int port) {
+        if (chatInstance == null) {
+            try {
+                chatInstance = new SocketClient(serverIp, port);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return chatInstance;
+    }
+
 
     public SocketClient(String host, int port) throws IOException {
         connect(host, port);
@@ -81,8 +93,10 @@ public class SocketClient implements Closeable {
     public boolean connect(String host, int port) {
         try {
             socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            out = new PrintWriter(socket.getOutputStream(), true);
+//            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
             return true;
         } catch (IOException e) {
             e.printStackTrace();

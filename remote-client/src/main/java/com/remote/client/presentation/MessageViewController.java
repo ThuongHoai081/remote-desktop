@@ -1,9 +1,12 @@
 package com.remote.client.presentation;
 
 import com.remote.client.HelloApplication;
+import com.remote.client.infrastructure.ConnectionInitiatorClient;
+import com.remote.client.infrastructure.ConnectionInitiatorServer;
 import com.remote.client.service.ServiceMessage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
@@ -24,9 +27,11 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.Enumeration;
+import java.util.ResourceBundle;
 
-public class MessageViewController {
+public class MessageViewController implements Initializable {
     @FXML
     private ImageView logOut;
 
@@ -52,51 +57,58 @@ public class MessageViewController {
 
     private ServiceMessage serviceMessage;
 
-
-
-    public void initialize() {
-
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         serviceMessage = new ServiceMessage();
-        String role = serviceMessage.isClientMode() ? "Client" : "Server";
-        System.out.println("Running as: " + role);
-      //  new Thread(this::listenForMessages).start();
-
-        try {
-            yourIP = findLocalIPAddress();
-        } catch (SocketException e) {
-            System.err.println("Không thể lấy địa chỉ IP: " + e.getMessage());
-        }
-
-    }
-    private String findLocalIPAddress() throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-
-            if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
-
-            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-
-            while (addresses.hasMoreElements()) {
-                InetAddress inetAddress = addresses.nextElement();
-
-                if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
-                    return inetAddress.getHostAddress();
-                }
-            }
-        }
-        throw new SocketException("Không tìm thấy địa chỉ IP hợp lệ.");
+       String role = serviceMessage.isClientMode() ? "Client" : "Server";
+        if(role.equals("Client")){
+            ConnectionInitiatorClient.getInstance().initializeMessage(messageContainer);
+       }
     }
 
-    private void listenForMessages() {
-        while (true) {
-            String receivedMessage = serviceMessage.receiveMessage();
-            if(receivedMessage != null ){
-                Platform.runLater(() -> addIncomingMessage(receivedMessage));
-            }
-        }
-    }
+//    public void initialize() {
+//
+//        serviceMessage = new ServiceMessage();
+//        String role = serviceMessage.isClientMode() ? "Client" : "Server";
+//        System.out.println("Running as: " + role);
+//        new Thread(this::listenForMessages).start();
+//
+//        try {
+//            yourIP = findLocalIPAddress();
+//        } catch (SocketException e) {
+//            System.err.println("Không thể lấy địa chỉ IP: " + e.getMessage());
+//        }
+//
+//    }
+//    private String findLocalIPAddress() throws SocketException {
+//        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+//
+//        while (networkInterfaces.hasMoreElements()) {
+//            NetworkInterface networkInterface = networkInterfaces.nextElement();
+//
+//            if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
+//
+//            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+//
+//            while (addresses.hasMoreElements()) {
+//                InetAddress inetAddress = addresses.nextElement();
+//
+//                if (inetAddress.getHostAddress().contains(".") && !inetAddress.isLoopbackAddress()) {
+//                    return inetAddress.getHostAddress();
+//                }
+//            }
+//        }
+//        throw new SocketException("Không tìm thấy địa chỉ IP hợp lệ.");
+//    }
+
+//    private void listenForMessages() {
+//        while (true) {
+//            String receivedMessage = serviceMessage.receiveMessage();
+//            if(receivedMessage != null ){
+//                Platform.runLater(() -> addIncomingMessage(receivedMessage));
+//            }
+//        }
+//    }
 
     @FXML
     private void handleSendMessage(){
@@ -221,17 +233,7 @@ public class MessageViewController {
         messageContainer.getChildren().add(messageBox);
     }
     // hiện tin nhắn của đối phương
-    @FXML
-    public void addIncomingMessage(String message) {
-        HBox messageBox = new HBox();
-        messageBox.setAlignment(Pos.CENTER_LEFT);
-        messageBox.setStyle("-fx-padding: 10;");
 
-        Text text = new Text(message);
-        TextFlow textFlow = new TextFlow(text);
-        textFlow.setStyle("-fx-background-color: #FFFFFF; -fx-padding: 5;-fx-background-radius: 10;");
 
-        messageBox.getChildren().add(textFlow);
-        messageContainer.getChildren().add(messageBox);
-    }
+
 }
