@@ -3,6 +3,8 @@ package com.remote.client.service;
 import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class ServiceMessage {
@@ -36,23 +38,27 @@ public class ServiceMessage {
             System.err.println("Error sending message: " + e.getMessage());
         }
     }
-
-    public String receiveMessage() {
+    public void sendFile(File file) {
         try {
             if (isClientMode && connectClient != null) {
-                String receivedMessage = connectClient.getMessage();
-                if (receivedMessage != null && receivedMessage.startsWith("CHAT:")){
-                    return receivedMessage.substring(4);
-                }
+                connectClient.sendFileMessage(file);
             } else if (!isClientMode && connectServer != null) {
-                String receivedMessage = connectServer.getMessage();
-                if (receivedMessage != null && receivedMessage.startsWith("CHAT:")){
-                    return receivedMessage.substring(4);
-                }
+                connectServer.sendFileMessage(file);
             }
-        } catch (Exception e) {
-            System.err.println("Error receiving message: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error sending message: " + e.getMessage());
         }
-        return null;
+    }
+
+    public void sendImage(BufferedImage image) {
+        try {
+            if (isClientMode && connectClient != null) {
+                connectClient.sendImageMessage(image);
+            } else if (!isClientMode && connectServer != null) {
+                connectServer.sendImageMessage(image);
+            }
+        } catch (IOException e) {
+            System.err.println("Error sending message: " + e.getMessage());
+        }
     }
 }

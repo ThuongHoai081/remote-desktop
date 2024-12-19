@@ -9,6 +9,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class ConnectionInitiatorClient {
@@ -18,11 +20,12 @@ public class ConnectionInitiatorClient {
 
     private SocketClient chatSocket;
     private SocketClient streamingSocket;
+    private VoiceChatClient voiceChatClient;
 
     private ConnectionInitiatorClient(String serverIp) {
         socket = SocketClient.getInstance(serverIp);
         chatSocket = SocketClient.getChatInstance(serverIp, 5000); // Port for chat
-        //streamingSocket = SocketClient.getStreamingInstance(serverIp, 6000);
+        streamingSocket = SocketClient.getStreamingInstance(serverIp, 6000);
     }
 
     public static ConnectionInitiatorClient getInstance (String serverIp) throws IOException {
@@ -41,25 +44,23 @@ public class ConnectionInitiatorClient {
         return auth.isValid(password);
     }
 
-    public void sendMessage(String message) throws IOException {
-        socket.sendMessage(message);
+    public void sendFileMessage(File file) throws IOException {
+        if (chatSocket != null) {
+            chatSocket.sendFile(file);
+        }
     }
+
+    public void sendImageMessage(BufferedImage image) throws IOException {
+        if (chatSocket != null) {
+            chatSocket.sendImage(image);
+        }
+    }
+
     public void sendChatMessage(String message) throws IOException {
         // Chỉ sử dụng socket chat khi đang ở chế độ Client
         if (chatSocket != null) {
             chatSocket.sendMessage(message);  // Gửi qua socket chat
         }
-    }
-    public String getChatMessage() {
-        // Đảm bảo rằng socket chat được sử dụng để nhận tin nhắn
-        if (chatSocket != null) {
-            return chatSocket.getMessage(); // Lấy tin nhắn từ chatSocket
-        }
-        return null;
-    }
-
-    public String getMessage() throws IOException {
-        return socket.getMessage();
     }
 
     public void initializeStreaming(ImageView imageView) {
@@ -84,5 +85,13 @@ public class ConnectionInitiatorClient {
 
     public void initializeMessage(VBox messageContainer) {
         new ReceiveMessageClient(chatSocket,messageContainer);
+    }
+
+    public void initializeStreaming() {
+        new VoiceChatClient(streamingSocket);
+    }
+
+    public void cancelStreaming(){
+        voiceChatClient.cleanUp();
     }
 }

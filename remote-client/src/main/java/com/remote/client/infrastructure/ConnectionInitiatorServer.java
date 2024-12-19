@@ -1,7 +1,6 @@
 package com.remote.client.infrastructure;
 
 import com.remote.client.HelloApplication;
-import com.remote.client.presentation.MessageViewController;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class ConnectionInitiatorServer {
@@ -17,6 +18,8 @@ public class ConnectionInitiatorServer {
     private SocketServer socket;
     private String serverPassword;
     private SocketServer chatSocket;
+    private SocketServer streamingSocket;
+    private VoiceChatServer voiceChatServer;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -39,6 +42,7 @@ public class ConnectionInitiatorServer {
     public void initiateConnection() throws IOException {
         socket = SocketServer.getInstance();
         chatSocket = SocketServer.getChatInstance(5000);
+        streamingSocket = SocketServer.getStreamingInstance(6000);
         AuthenticatorServer auth = new AuthenticatorServer(socket, serverPassword);
         System.out.println("ServerPassword:" + serverPassword);
         while(!auth.isValid()) {
@@ -51,24 +55,6 @@ public class ConnectionInitiatorServer {
         initiateFrameSending();
     }
 
-//    void initiateFrameSending() {
-//        Rectangle rect = new Rectangle(dim);
-//        new SendFrameServer(rect);
-//        new ReceiveEventsServer();
-//
-//        Platform.runLater(() -> {
-//            try {
-//                Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
-//                Stage messageStage = new Stage();
-//                Scene messageScene = new Scene(messagePane);
-//                messageStage.setScene(messageScene);
-//                messageStage.setTitle("Messages");
-//                messageStage.show();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 public void initiateFrameSending() {
     Rectangle rect = new Rectangle(dim);
     new SendFrameServer(rect);
@@ -106,28 +92,28 @@ public void initiateFrameSending() {
         return Double.toString(dim.getHeight());
     }
 
-    public void sendMessage(String message) throws IOException {
-        socket.sendMessage(message);
+    public void sendFileMessage(File file) throws IOException {
+        if (chatSocket != null) {
+            chatSocket.sendFile(file);
+        }
     }
+
+    public void sendImageMessage(BufferedImage image) throws IOException {
+        if (chatSocket != null) {
+            chatSocket.sendImage(image);
+        }
+    }
+
     public void sendChatMessage(String message) throws IOException {
         // Chỉ sử dụng socket chat khi đang ở chế độ Client
         if (chatSocket != null) {
             chatSocket.sendMessage(message);  // Gửi qua socket chat
         }
     }
-    public String getChatMessage() {
-        // Đảm bảo rằng socket chat được sử dụng để nhận tin nhắn
-        if (chatSocket != null) {
-            return chatSocket.getMessage(); // Lấy tin nhắn từ chatSocket
-        }
-        return null;
+    public void initializeStreaming() {
+        voiceChatServer = new VoiceChatServer(streamingSocket);
     }
-
-
-    public String getMessage() throws IOException {
-        return socket.getMessage();
+    public void cancelStreaming(){
+        voiceChatServer.cleanUp();
     }
-//    public void initializeMessage(VBox messageContainer) {
-//        new ReceiveMessageServer(messageContainer);
-//    }
 }

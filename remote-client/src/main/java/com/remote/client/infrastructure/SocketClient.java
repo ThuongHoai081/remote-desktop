@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class SocketClient implements Closeable {
 
@@ -26,8 +27,6 @@ public class SocketClient implements Closeable {
             socket = new Socket(serverIp, port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
-           // out = new PrintWriter(socket.getOutputStream(), true);
-            //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             correctIP = true;
         } catch (IOException e) {
             System.out.println("Failed connection.");
@@ -57,6 +56,23 @@ public class SocketClient implements Closeable {
         }
     }
 
+    public FilterInputStream getInputStream() {
+        return inputStream;
+    }
+
+    public FilterOutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    // Gửi hình ảnh qua kết nối
+    public void sendImage(BufferedImage image) {
+        try {
+            ImageIO.write(image, "jpeg", socket.getOutputStream());
+        } catch (IOException e) {
+            System.err.println("Error sending image: " + e.getMessage());
+        }
+    }
+
     public BufferedImage getImage() {
         try {
             byte[] bytes = new byte[1024 * 1024];
@@ -74,6 +90,18 @@ public class SocketClient implements Closeable {
             return null;
         }
     }
+
+    public static SocketClient getStreamingInstance(String serverIp, int port) {
+        if (streamingInstance == null) {
+            try {
+                streamingInstance = new SocketClient(serverIp, port);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return streamingInstance;
+    }
+
     public static SocketClient getChatInstance(String serverIp, int port) {
         if (chatInstance == null) {
             try {
@@ -88,6 +116,48 @@ public class SocketClient implements Closeable {
 
     public SocketClient(String host, int port) throws IOException {
         connect(host, port);
+    }
+
+    public void sendFile(File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file);
+             DataOutputStream dos = new DataOutputStream(socket.getOutputStream())) {
+
+            byte[] fileNameBytes = file.getName().getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(fileNameBytes.length);
+            dos.write(fileNameBytes);
+            dos.writeLong(file.length());
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                dos.write(buffer, 0, bytesRead);
+            }
+            dos.flush();
+        }
+    }
+
+    public File receiveFile() throws IOException {
+        try (DataInputStream dis = new DataInputStream(socket.getInputStream())) {
+            int fileNameLength = dis.readInt();
+            byte[] fileNameBytes = new byte[fileNameLength];
+            dis.readFully(fileNameBytes);
+            String fileName = new String(fileNameBytes, StandardCharsets.UTF_8);
+
+            long fileSize = dis.readLong();
+            File file = new File("C:\\Users\\HP\\Downloads", fileName);
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4096];
+                long totalBytesRead = 0;
+                int bytesRead;
+                while (totalBytesRead < fileSize) {
+                    bytesRead = dis.read(buffer, 0, (int) Math.min(buffer.length, fileSize - totalBytesRead));
+                    fos.write(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+                }
+            }
+            return file;
+        }
     }
 
     public boolean connect(String host, int port) {
