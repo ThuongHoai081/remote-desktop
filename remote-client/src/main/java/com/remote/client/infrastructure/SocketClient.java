@@ -198,4 +198,29 @@ public class SocketClient implements Closeable {
     public String receiveMessageToServer() throws IOException {
         return in.readLine();
     }
+
+    public BufferedImage getImageMessage() {
+        try {
+            byte[] bytes = new byte[1024 * 1024];
+            int count = 0;
+            do {
+                count+= chatInstance.getInputStream().read(bytes, count, bytes.length - count);
+
+            } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
+
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+
+            return image;
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+    public void sendImageMessage(BufferedImage image) {
+        try {
+            ImageIO.write(image, "jpeg", chatInstance.getOutputStream());
+        } catch (IOException e) {
+            System.err.println("Error sending image: " + e.getMessage());
+        }
+    }
 }

@@ -40,7 +40,7 @@ public class ReceiveMessageClient  extends Thread {
                 if (receivedFile != null) {
                     Platform.runLater(() -> addIncomingFile(receivedFile));
                 }
-                BufferedImage receivedImage = chatSocket.getImage();
+                BufferedImage receivedImage = chatSocket.getImageMessage();
                 if (receivedImage != null) {
                     Platform.runLater(() -> addIncomingImage(receivedImage));
                 }

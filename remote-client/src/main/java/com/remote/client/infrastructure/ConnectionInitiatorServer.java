@@ -112,7 +112,7 @@ public void initiateFrameSending() {
 
     public void sendImageMessage(BufferedImage image) throws IOException {
         if (chatSocket != null) {
-            chatSocket.sendImage(image);
+            chatSocket.sendImageMessage(image);
         }
     }
 
