@@ -49,7 +49,9 @@ public class MessageViewController implements Initializable {
        String role = serviceMessage.isClientMode() ? "Client" : "Server";
         if(role.equals("Client")){
             ConnectionInitiatorClient.getInstance().initializeMessage(messageContainer);
-       }
+       }else{
+            ConnectionInitiatorServer.getInstance().initializeMessage(messageContainer);
+        }
 
         // Đảm bảo luôn cuộn xuống cuối khi thêm tin nhắn
         messageContainer.heightProperty().addListener((observable, oldValue, newValue) -> {
