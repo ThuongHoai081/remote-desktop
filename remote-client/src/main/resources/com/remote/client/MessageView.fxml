@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <StackPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.remote.client.presentation.MessageViewController">
    <children>
@@ -21,6 +20,16 @@
                         <ImageView fx:id="logOut" fitHeight="42.0" fitWidth="46.0" layoutX="12.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
                            <image>
                               <Image url="@image/logout.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="voiceChat" fitHeight="46.0" fitWidth="49.0" layoutX="10.0" layoutY="72.0" onMouseClicked="#handleVoiceChat" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
+                           <image>
+                              <Image url="@image/voice-message.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="cancel" fitHeight="38.0" fitWidth="43.0" layoutX="14.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true" styleClass="cursor" visible="false">
+                           <image>
+                              <Image url="@image/cancel.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -43,22 +52,15 @@
                                           <Image url="@image/send-message.png" />
                                        </image>
                                     </ImageView>
-                                    <TextField fx:id="messageInput" layoutX="76.0" layoutY="17.0" prefHeight="25.0" prefWidth="369.0" />
-                                    <ImageView fitHeight="24.0" fitWidth="25.0" layoutX="46.0" layoutY="18.0" onMousePressed="#OnMousePressed" onMouseReleased="#OnMouseReleased" pickOnBounds="true" preserveRatio="true" styleClass="cursor">
-                                       <image>
-                                          <Image url="@image/microphone.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label fx:id="voiceAlert" alignment="CENTER" layoutX="169.0" layoutY="1.0" prefHeight="35.0" prefWidth="148.0" styleClass="voiceAlert" stylesheets="@design/main.css" text="Giữ chuột để bắt đầu" textFill="WHITE" visible="false">
-                                       <font>
-                                          <Font name="System Italic" size="12.0" />
-                                       </font>
-                                    </Label>
+                                    <TextField fx:id="messageInput" layoutX="51.0" layoutY="17.0" prefHeight="25.0" prefWidth="394.0" />
                                  </children>
                               </AnchorPane>
                            </bottom>
                            <center>
-                              <VBox fx:id="messageContainer" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+                              <!-- Thêm ScrollPane bao quanh VBox -->
+                              <ScrollPane fx:id="messageScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" BorderPane.alignment="CENTER">
+                                 <VBox fx:id="messageContainer" prefHeight="200.0" prefWidth="100.0" />
+                              </ScrollPane>
                            </center>
                         </BorderPane>
                      </children></AnchorPane>

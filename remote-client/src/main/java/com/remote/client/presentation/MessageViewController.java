@@ -9,9 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -22,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 
+import javafx.scene.control.Alert.AlertType;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -34,7 +33,13 @@ import java.util.ResourceBundle;
 public class MessageViewController implements Initializable {
     @FXML
     private ImageView logOut;
+    @FXML
+    private ScrollPane messageScrollPane;
+    @FXML
+    private ImageView voiceChat;
 
+    @FXML
+    private ImageView cancel;
     @FXML
     private VBox messageContainer;
 
@@ -64,6 +69,9 @@ public class MessageViewController implements Initializable {
         if(role.equals("Client")){
             ConnectionInitiatorClient.getInstance().initializeMessage(messageContainer);
        }
+        messageContainer.heightProperty().addListener((observable, oldValue, newValue) -> {
+            messageScrollPane.setVvalue(1.0);
+        });
     }
 
 //    public void initialize() {
@@ -234,6 +242,25 @@ public class MessageViewController implements Initializable {
     }
     // hiện tin nhắn của đối phương
 
-
+    @FXML
+    private void handleVoiceChat() {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận");
+        alert.setHeaderText("Bạn có chắc chắn không?");
+        alert.setContentText("Chọn Yes để tiếp tục hoặc No để hủy bỏ.");
+        // Hiển thị hộp thoại và chờ người dùng chọn
+        ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
+        // Kiểm tra người dùng chọn Yes hay No
+        if (result == ButtonType.YES) {
+            String role = serviceMessage.isClientMode() ? "Client" : "Server";
+            if(role.equals("Client")){
+                ConnectionInitiatorClient.getInstance().initializeStreaming();
+            } else {
+                ConnectionInitiatorServer.getInstance().initializeStreaming();
+            }
+            voiceChat.setVisible(false);
+            cancel.setVisible(true);
+        }
+    }
 
 }

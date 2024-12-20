@@ -84,6 +84,16 @@ public class SocketClient implements Closeable {
         }
         return chatInstance;
     }
+    public static SocketClient getStreamingInstance(String serverIp, int port) {
+        if (streamingInstance == null) {
+            try {
+                streamingInstance = new SocketClient(serverIp, port);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return streamingInstance;
+    }
 
 
     public SocketClient(String host, int port) throws IOException {
@@ -128,4 +138,11 @@ public class SocketClient implements Closeable {
     public String receiveMessageToServer() throws IOException {
         return in.readLine();
     }
+    public FilterInputStream getInputStream() {
+        return inputStream;
+    }
+    public FilterOutputStream getOutputStream() {
+        return outputStream;
+    }
+
 }

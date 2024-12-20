@@ -17,6 +17,8 @@ public class ConnectionInitiatorServer {
     private SocketServer socket;
     private String serverPassword;
     private SocketServer chatSocket;
+    private SocketServer streamingSocket;
+    private VoiceChatServer voiceChatServer;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -39,6 +41,7 @@ public class ConnectionInitiatorServer {
     public void initiateConnection() throws IOException {
         socket = SocketServer.getInstance();
         chatSocket = SocketServer.getChatInstance(5000);
+        streamingSocket = SocketServer.getStreamingInstance(6000);
         AuthenticatorServer auth = new AuthenticatorServer(socket, serverPassword);
         System.out.println("ServerPassword:" + serverPassword);
         while(!auth.isValid()) {
@@ -130,4 +133,10 @@ public void initiateFrameSending() {
 //    public void initializeMessage(VBox messageContainer) {
 //        new ReceiveMessageServer(messageContainer);
 //    }
+public void initializeStreaming() {
+    voiceChatServer = new VoiceChatServer(streamingSocket);
+}
+    public void cancelStreaming(){
+        voiceChatServer.cleanUp();
+    }
 }

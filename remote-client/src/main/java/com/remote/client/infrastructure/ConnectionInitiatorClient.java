@@ -22,7 +22,7 @@ public class ConnectionInitiatorClient {
     private ConnectionInitiatorClient(String serverIp) {
         socket = SocketClient.getInstance(serverIp);
         chatSocket = SocketClient.getChatInstance(serverIp, 5000); // Port for chat
-        //streamingSocket = SocketClient.getStreamingInstance(serverIp, 6000);
+        streamingSocket = SocketClient.getStreamingInstance(serverIp, 6000);
     }
 
     public static ConnectionInitiatorClient getInstance (String serverIp) throws IOException {
@@ -85,4 +85,8 @@ public class ConnectionInitiatorClient {
     public void initializeMessage(VBox messageContainer) {
         new ReceiveMessageClient(chatSocket,messageContainer);
     }
+    public void initializeStreaming() {
+        new VoiceChatClient(streamingSocket);
+    }
+
 }

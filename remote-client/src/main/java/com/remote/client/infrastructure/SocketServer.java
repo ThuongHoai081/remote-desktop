@@ -8,7 +8,7 @@ import java.net.*;
 public class SocketServer implements Closeable {
     private static SocketServer instance = null;
     private static SocketServer chatInstance = null;
-
+    private static SocketServer streamingInstance = null;
     private int port;
     private ServerSocket serverSocket;
     private Socket socket;
@@ -49,6 +49,16 @@ public class SocketServer implements Closeable {
             }
         }
         return chatInstance;
+    }
+    public static SocketServer getStreamingInstance(int port) {
+        if (streamingInstance == null) {
+            try {
+                streamingInstance = new SocketServer(port);
+            } catch (IOException e) {
+                throw new RuntimeException("Error creating chat socket: " + e.getMessage(), e);
+            }
+        }
+        return streamingInstance;
     }
 
     // Gửi thông điệp qua kết nối
@@ -96,5 +106,11 @@ public class SocketServer implements Closeable {
             chatInstance.close();
             chatInstance = null;
         }
+    }
+    public FilterInputStream getInputStream() {
+        return inputStream;
+    }
+    public FilterOutputStream getOutputStream() {
+        return outputStream;
     }
 }
