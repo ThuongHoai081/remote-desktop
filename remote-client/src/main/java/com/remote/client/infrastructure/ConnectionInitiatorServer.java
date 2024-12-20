@@ -77,19 +77,31 @@ public void initiateFrameSending() {
     new SendFrameServer(rect);
     new ReceiveEventsServer();
 
+//    Platform.runLater(() -> {
+//        try {
+//            // Tải giao diện message từ file FXML
+//            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("MessageView.fxml"));
+//            Parent messagePane = loader.load();
+//
+//            // Lấy VBox từ giao diện FXML
+//            VBox messageContainer = (VBox) messagePane.lookup("#messageContainer");
+//            if (messageContainer != null) {
+//                new ReceiveMessageServer(chatSocket,messageContainer);
+//            }
+//
+//            // Tạo stage cho cửa sổ message
+//            Stage messageStage = new Stage();
+//            Scene messageScene = new Scene(messagePane);
+//            messageStage.setScene(messageScene);
+//            messageStage.setTitle("Messages");
+//            messageStage.show();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    });
     Platform.runLater(() -> {
         try {
-            // Tải giao diện message từ file FXML
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("MessageView.fxml"));
-            Parent messagePane = loader.load();
-
-            // Lấy VBox từ giao diện FXML
-            VBox messageContainer = (VBox) messagePane.lookup("#messageContainer");
-            if (messageContainer != null) {
-                new ReceiveMessageServer(chatSocket,messageContainer);
-            }
-
-            // Tạo stage cho cửa sổ message
+            Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
             Stage messageStage = new Stage();
             Scene messageScene = new Scene(messagePane);
             messageStage.setScene(messageScene);
@@ -136,6 +148,9 @@ public void initiateFrameSending() {
 public void initializeStreaming() {
     voiceChatServer = new VoiceChatServer(streamingSocket);
 }
+    public void initializeMessage(VBox messageContainer) {
+        new ReceiveMessageServer(chatSocket,messageContainer);
+    }
     public void cancelStreaming(){
         voiceChatServer.cleanUp();
     }

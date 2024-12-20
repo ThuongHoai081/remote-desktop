@@ -68,7 +68,9 @@ public class MessageViewController implements Initializable {
        String role = serviceMessage.isClientMode() ? "Client" : "Server";
         if(role.equals("Client")){
             ConnectionInitiatorClient.getInstance().initializeMessage(messageContainer);
-       }
+       }else{
+            ConnectionInitiatorServer.getInstance().initializeMessage(messageContainer);
+        }
         messageContainer.heightProperty().addListener((observable, oldValue, newValue) -> {
             messageScrollPane.setVvalue(1.0);
         });
