@@ -1,6 +1,7 @@
 package com.remote.client.infrastructure;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
@@ -22,6 +23,10 @@ public class SocketClient implements Closeable {
     private DataOutputStream outputStream;
     private static SocketClient chatInstance = null;
     private static SocketClient streamingInstance = null;
+    private SocketServer streamingSocket;
+    private SourceDataLine speakers;
+    private TargetDataLine microphone = null;
+
     public SocketClient(String serverIp)  {
         try {
             socket = new Socket(serverIp, port);
@@ -44,6 +49,10 @@ public class SocketClient implements Closeable {
         return instance;
     }
 
+    public static SocketClient getStreamingInstance() {
+        return streamingInstance;
+    }
+
     public void sendMessage(String message) throws  IOException {
             outputStream.writeUTF(message);
     }
@@ -54,14 +63,6 @@ public class SocketClient implements Closeable {
         } catch (IOException e) {
             return null;
         }
-    }
-
-    public FilterInputStream getInputStream() {
-        return inputStream;
-    }
-
-    public FilterOutputStream getOutputStream() {
-        return outputStream;
     }
 
     // Gửi hình ảnh qua kết nối
@@ -181,16 +182,6 @@ public class SocketClient implements Closeable {
         }
     }
 
-    public boolean isServerAvailable(String serverIP, int serverPort) {
-        try {
-            Socket testSocket = new Socket(serverIP, serverPort);
-            testSocket.close();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     public void sendMessageToServer(String message) {
         out.println(message);
     }
@@ -204,7 +195,7 @@ public class SocketClient implements Closeable {
             byte[] bytes = new byte[1024 * 1024];
             int count = 0;
             do {
-                count+= chatInstance.getInputStream().read(bytes, count, bytes.length - count);
+                count+= socket.getInputStream().read(bytes, count, bytes.length - count);
 
             } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
 
@@ -218,9 +209,50 @@ public class SocketClient implements Closeable {
     }
     public void sendImageMessage(BufferedImage image) {
         try {
-            ImageIO.write(image, "jpeg", chatInstance.getOutputStream());
+            ImageIO.write(image, "jpeg", socket.getOutputStream());
         } catch (IOException e) {
             System.err.println("Error sending image: " + e.getMessage());
+        }
+    }
+    public void voiceChat(){
+        try{
+            InputStream in = socket.getInputStream();
+            //audioformat
+            AudioFormat format = new AudioFormat(16000, 8, 2, true, true);
+            //audioformat
+            //selecting and strating speakers
+            DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
+            speakers = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
+            speakers.open(format);
+            speakers.start();
+
+            //for sending
+            OutputStream out = null;
+            out = socket.getOutputStream();
+
+            //selecting and starting microphone
+            microphone = AudioSystem.getTargetDataLine(format);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            microphone = (TargetDataLine) AudioSystem.getLine(info);
+            microphone.open(format);
+            microphone.start();
+
+
+            byte[] bufferForOutput = new byte[1024];
+            int bufferVariableForOutput = 0;
+
+            byte[] bufferForInput = new byte[1024];
+            int bufferVariableForInput;
+
+            while((bufferVariableForInput = in.read(bufferForInput)) > 0  || (bufferVariableForOutput=microphone.read(bufferForOutput, 0, 1024)) > 0) {
+                out.write(bufferForOutput, 0, bufferVariableForOutput);
+                speakers.write(bufferForInput, 0, bufferVariableForInput);
+
+            }
+        }
+        catch(IOException | LineUnavailableException e)
+        {
+            e.printStackTrace();
         }
     }
 }

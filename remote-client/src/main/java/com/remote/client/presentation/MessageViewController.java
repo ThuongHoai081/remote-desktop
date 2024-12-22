@@ -138,7 +138,7 @@ public class MessageViewController implements Initializable {
         ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
 
         // Kiểm tra người dùng chọn Yes hay No
-        if (result == ButtonType.YES) {
+        if (result == ButtonType.OK) {
             String role = serviceMessage.isClientMode() ? "Client" : "Server";
             if(role.equals("Client")){
                 ConnectionInitiatorClient.getInstance().initializeStreaming();
@@ -164,9 +164,9 @@ public class MessageViewController implements Initializable {
         if (result == ButtonType.YES) {
             String role = serviceMessage.isClientMode() ? "Client" : "Server";
             if(role.equals("Client")){
-                ConnectionInitiatorClient.getInstance().cancelStreaming();
+              //  ConnectionInitiatorClient.getInstance().cancelStreaming();
             } else {
-                ConnectionInitiatorServer.getInstance().cancelStreaming();
+              //  ConnectionInitiatorServer.getInstance().cancelStreaming();
             }
             voiceChat.setVisible(true);
             cancel.setVisible(false);

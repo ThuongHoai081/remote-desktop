@@ -20,7 +20,6 @@ public class ConnectionInitiatorClient {
 
     private SocketClient chatSocket;
     private SocketClient streamingSocket;
-    private VoiceChatClient voiceChatClient;
 
     private ConnectionInitiatorClient(String serverIp) {
         socket = SocketClient.getInstance(serverIp);
@@ -88,10 +87,6 @@ public class ConnectionInitiatorClient {
     }
 
     public void initializeStreaming() {
-        new VoiceChatClient(streamingSocket);
-    }
-
-    public void cancelStreaming(){
-        voiceChatClient.cleanUp();
+        new VoiceChatClient();
     }
 }

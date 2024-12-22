@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 
 import com.remote.client.HelloApplication;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
-import com.remote.client.infrastructure.SocketServer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,27 +24,30 @@ public class ScreenViewController implements Initializable {
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private SocketServer socket;
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         executor.execute(() -> {
             ConnectionInitiatorServer connectInit = ConnectionInitiatorServer.getInstance();
             try {
                 connectInit.initiateConnection();
+                // Chuyển về luồng JavaFX để cập nhật giao diện và đóng cửa sổ
+                Platform.runLater(this::closeWindow);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // Ghi log lỗi và hiển thị thông báo nếu cần
+                e.printStackTrace();
+                Platform.runLater(() -> showError("Connection failed!"));
             }
-            Platform.runLater(this::closeWindow);
         });
     }
 
     @FXML
     void stop() {
+        // Đảm bảo mọi hành động liên quan đến giao diện đều thực hiện trên luồng JavaFX
         Platform.runLater(() -> {
             closeWindow();
+            shutdownExecutor();
             try {
+                // Tải giao diện chính sau khi kết thúc kết nối
                 Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("main.fxml"));
                 Stage messageStage = new Stage();
                 Scene messageScene = new Scene(messagePane);
@@ -59,7 +61,28 @@ public class ScreenViewController implements Initializable {
     }
 
     private void closeWindow() {
-        Stage stage = (Stage) awaitingConnLbl.getScene().getWindow();
-        stage.close();
+        if (awaitingConnLbl.getScene() != null) {
+            Stage stage = (Stage) awaitingConnLbl.getScene().getWindow();
+            if (stage != null) {
+                stage.close();
+            }
+        }
+    }
+
+    private void shutdownExecutor() {
+        executor.shutdown(); // Ngăn không cho thêm task mới
+        try {
+            if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                executor.shutdownNow(); // Dừng các task đang chạy
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow(); // Dừng ngay lập tức nếu có lỗi
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void showError(String message) {
+        // Hiển thị thông báo lỗi trên màn hình nếu cần
+        awaitingConnLbl.setText(message);
     }
 }

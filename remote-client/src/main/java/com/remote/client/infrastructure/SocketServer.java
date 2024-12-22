@@ -1,6 +1,7 @@
 package com.remote.client.infrastructure;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -10,7 +11,9 @@ public class SocketServer implements Closeable {
     private static SocketServer instance = null;
     private static SocketServer chatInstance = null;
     private static SocketServer streamingInstance = null;
-
+    private SocketServer streamingSocket;
+    private SourceDataLine speakers;
+    private TargetDataLine microphone = null;
 
     private int port;
     private ServerSocket serverSocket;
@@ -40,6 +43,10 @@ public class SocketServer implements Closeable {
             instance = new SocketServer(); // Sử dụng cổng mặc định
         }
         return instance;
+    }
+
+    public static SocketServer getStreamingInstance() throws IOException {
+        return streamingInstance;
     }
 
     // Lấy instance của SocketServer cho cổng chat
@@ -84,7 +91,7 @@ public class SocketServer implements Closeable {
 
     public void sendImageMessage(BufferedImage image) {
         try {
-            ImageIO.write(image, "jpeg", chatInstance.getOutputStream());
+            ImageIO.write(image, "png", socket.getOutputStream());
         } catch (IOException e) {
             System.err.println("Error sending image: " + e.getMessage());
         }
@@ -110,21 +117,43 @@ public class SocketServer implements Closeable {
 
     public BufferedImage getImageMessage() {
         try {
-            byte[] bytes = new byte[1024 * 1024];
+            byte[] bytes = new byte[1024 * 1024]; // 1 MB buffer
             int count = 0;
-            do {
-                count+= chatInstance.getInputStream().read(bytes, count, bytes.length - count);
+            int bytesRead;
+            boolean isJPEGComplete = false;
 
-            } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
+            while ((bytesRead = socket.getInputStream().read(bytes, count, bytes.length - count)) != -1) {
+                count += bytesRead;
 
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+                // Check for JPEG end marker (0xFFD9)
+                if (count > 4 && bytes[count - 2] == (byte) 0xFF && bytes[count - 1] == (byte) 0xD9) {
+                    isJPEGComplete = true;
+                    break;
+                }
 
-            return image;
+                // Check for buffer overflow
+                if (count >= bytes.length) {
+                    System.err.println("Error: Image size exceeds buffer limit.");
+                    return null;
+                }
+            }
+
+            if (!isJPEGComplete) {
+                System.err.println("Error: Incomplete image data received.");
+                return null;
+            }
+
+            // Read the image from the received bytes
+            return ImageIO.read(new ByteArrayInputStream(bytes, 0, count));
+        } catch (IOException e) {
+            System.err.println("Error receiving image: " + e.getMessage());
+            return null;
         } catch (Exception e) {
-            System.out.println(e);
+            System.err.println("Unexpected error: " + e.getMessage());
             return null;
         }
     }
+
 
     // Nhận thông điệp từ kết nối
     public String getMessage() {
@@ -173,13 +202,6 @@ public class SocketServer implements Closeable {
         }
     }
 
-    public FilterInputStream getInputStream() {
-        return inputStream;
-    }
-
-    public FilterOutputStream getOutputStream() {
-        return outputStream;
-    }
 
     public File receiveFile() throws IOException {
         try (DataInputStream dis = new DataInputStream(socket.getInputStream())) {
@@ -204,5 +226,45 @@ public class SocketServer implements Closeable {
             return file;
         }
     }
+    public void voiceChat(){
+        try{
+            InputStream in = socket.getInputStream();
+            //audioformat
+            AudioFormat format = new AudioFormat(16000, 8, 2, true, true);
+            //audioformat
+            //selecting and strating speakers
+            DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
+            speakers = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
+            speakers.open(format);
+            speakers.start();
 
+            //for sending
+            OutputStream out = null;
+            out = socket.getOutputStream();
+
+            //selecting and starting microphone
+            microphone = AudioSystem.getTargetDataLine(format);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            microphone = (TargetDataLine) AudioSystem.getLine(info);
+            microphone.open(format);
+            microphone.start();
+
+
+            byte[] bufferForOutput = new byte[1024];
+            int bufferVariableForOutput = 0;
+
+            byte[] bufferForInput = new byte[1024];
+            int bufferVariableForInput;
+
+            while((bufferVariableForInput = in.read(bufferForInput)) > 0  || (bufferVariableForOutput=microphone.read(bufferForOutput, 0, 1024)) > 0) {
+                out.write(bufferForOutput, 0, bufferVariableForOutput);
+                speakers.write(bufferForInput, 0, bufferVariableForInput);
+
+            }
+        }
+        catch(IOException | LineUnavailableException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

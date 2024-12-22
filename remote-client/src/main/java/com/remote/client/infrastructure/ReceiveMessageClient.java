@@ -1,10 +1,12 @@
 package com.remote.client.infrastructure;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -16,10 +18,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-public class ReceiveMessageClient  extends Thread {
-    private SocketClient chatSocket;
+public class ReceiveMessageClient extends Thread {
+    private final SocketClient chatSocket;
 
-    private VBox messageContainer;
+    private final VBox messageContainer;
 
     public ReceiveMessageClient(SocketClient chatSocket, VBox messageContainer) {
         this.chatSocket = chatSocket;
@@ -30,27 +32,20 @@ public class ReceiveMessageClient  extends Thread {
     @Override
     public void run() {
         while (true) {
-            try {
-                String receivedMessage = chatSocket.getMessage();
-                if (receivedMessage != null) {
-                    Platform.runLater(() -> addIncomingMessage(receivedMessage));
-                }
+            BufferedImage receivedImage = chatSocket.getImageMessage();
+            if (receivedImage != null) {
+                WritableImage imageFx = SwingFXUtils.toFXImage(receivedImage, null);
+                Platform.runLater(() -> addIncomingImage(imageFx));
+            }
+            String receivedMessage = chatSocket.getMessage();
+            if (receivedMessage != null) {
+                Platform.runLater(() -> addIncomingMessage(receivedMessage));
+            }
 
-                File receivedFile = chatSocket.receiveFile();
+              /*  File receivedFile = chatSocket.receiveFile();
                 if (receivedFile != null) {
                     Platform.runLater(() -> addIncomingFile(receivedFile));
-                }
-                BufferedImage receivedImage = chatSocket.getImageMessage();
-                if (receivedImage != null) {
-                    Platform.runLater(() -> addIncomingImage(receivedImage));
-                }
-
-                // You can adjust the delay here if necessary to avoid overloading the CPU
-                Thread.sleep(100);  // A small delay to avoid maxing out the CPU in the loop
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();  // You can log the error or handle it based on your needs
-            }
+                }*/
         }
     }
 
@@ -70,7 +65,7 @@ public class ReceiveMessageClient  extends Thread {
     }
 
     @FXML
-    public void addIncomingFile(File file){
+    public void addIncomingFile(File file) {
         HBox fileBox = new HBox();
         fileBox.setAlignment(Pos.CENTER_RIGHT);
         fileBox.setStyle("-fx-padding: 10;");
@@ -87,47 +82,34 @@ public class ReceiveMessageClient  extends Thread {
         downloadButton.setStyle("-fx-background-color: white; -fx-text-fill: purple; -fx-background-radius: 10;");
         downloadButton.setOnAction(e -> downloadFile(file));
 
-        TextFlow textFlow = new TextFlow(fileNameLabel,fileSizeLabel, downloadButton);
+        TextFlow textFlow = new TextFlow(fileNameLabel, fileSizeLabel, downloadButton);
         textFlow.setStyle("-fx-background-color: #6699FF; -fx-padding: 10; -fx-background-radius: 10;");
 
-        fileBox.getChildren().addAll( textFlow);
+        fileBox.getChildren().addAll(textFlow);
 
         messageContainer.getChildren().add(fileBox);
     }
 
     @FXML
-    public void addIncomingImage(BufferedImage bufferedImage) {
-        try {
-            // Convert BufferedImage to JavaFX Image
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "png", byteArrayOutputStream);  // You can choose another format like jpg
-            byte[] imageData = byteArrayOutputStream.toByteArray();
+    public void addIncomingImage(WritableImage writableImage) {
+        // Create ImageView to display the image
+        ImageView imageView = new ImageView(writableImage);
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
 
-            // Create Image from byte array
-            Image image = new Image(new java.io.ByteArrayInputStream(imageData));
+        // Create TextFlow to contain the ImageView (optional for styling)
+        TextFlow textFlow = new TextFlow(imageView);
+        textFlow.setStyle("-fx-background-color: #6699FF; -fx-padding: 10; -fx-background-radius: 10;");
 
-            // Create ImageView to display the image
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(200);
-            imageView.setFitHeight(150);
-            imageView.setPreserveRatio(true);
+        // Create message box (HBox) and add ImageView inside it
+        HBox messageBox = new HBox();
+        messageBox.setAlignment(Pos.CENTER_LEFT); // Align left for incoming messages
+        messageBox.setStyle("-fx-padding: 10;");
+        messageBox.getChildren().add(textFlow);  // Add the image to the message box
 
-            // Create TextFlow to contain the ImageView (optional for styling)
-            TextFlow textFlow = new TextFlow(imageView);
-            textFlow.setStyle("-fx-background-color: #6699FF; -fx-padding: 10; -fx-background-radius: 10;");
-
-            // Create message box (HBox) and add ImageView inside it
-            HBox messageBox = new HBox();
-            messageBox.setAlignment(Pos.CENTER_RIGHT);
-            messageBox.setStyle("-fx-padding: 10;");
-            messageBox.getChildren().add(textFlow);  // Add the image to the message box
-
-            // Add the message box to the message container
-            messageContainer.getChildren().add(messageBox);
-
-        } catch (IOException e) {
-            e.printStackTrace();  // Handle exceptions like IO errors
-        }
+        // Add the message box to the message container
+        messageContainer.getChildren().add(messageBox);
     }
 
     private void downloadFile(File file) {

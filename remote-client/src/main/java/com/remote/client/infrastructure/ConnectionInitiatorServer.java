@@ -19,7 +19,6 @@ public class ConnectionInitiatorServer {
     private String serverPassword;
     private SocketServer chatSocket;
     private SocketServer streamingSocket;
-    private VoiceChatServer voiceChatServer;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -60,28 +59,6 @@ public void initiateFrameSending() {
     new SendFrameServer(rect);
     new ReceiveEventsServer();
 
-//    Platform.runLater(() -> {
-//        try {
-//            // Tải giao diện message từ file FXML
-//            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("MessageView.fxml"));
-//            Parent messagePane = loader.load();
-//
-//            // Lấy VBox từ giao diện FXML
-//            VBox messageContainer = (VBox) messagePane.lookup("#messageContainer");
-//            if (messageContainer != null) {
-//                new ReceiveMessageServer(chatSocket,messageContainer);
-//            }
-//
-//            // Tạo stage cho cửa sổ message
-//            Stage messageStage = new Stage();
-//            Scene messageScene = new Scene(messagePane);
-//            messageStage.setScene(messageScene);
-//            messageStage.setTitle("Messages");
-//            messageStage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    });
     Platform.runLater(() -> {
         try {
             Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
@@ -126,9 +103,6 @@ public void initiateFrameSending() {
         new ReceiveMessageServer(chatSocket,messageContainer);
     }
     public void initializeStreaming() {
-        voiceChatServer = new VoiceChatServer(streamingSocket);
-    }
-    public void cancelStreaming(){
-        voiceChatServer.cleanUp();
+        new VoiceChatServer();
     }
 }
