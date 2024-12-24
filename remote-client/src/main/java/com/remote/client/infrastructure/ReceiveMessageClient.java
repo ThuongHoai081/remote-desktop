@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ReceiveMessageClient extends Thread {
     private final SocketClient chatSocket;
@@ -31,17 +32,44 @@ public class ReceiveMessageClient extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            BufferedImage receivedImage = chatSocket.getImageMessage();
-            if (receivedImage != null) {
-                WritableImage imageFx = SwingFXUtils.toFXImage(receivedImage, null);
-                Platform.runLater(() -> addIncomingImage(imageFx));
+            try {
+                while (true) {
+                    int dataType = chatSocket.getType();
+
+                    switch (dataType) {
+                        case 0: // Văn bản
+                            String receivedMessage = chatSocket.getMessage();
+                            if (receivedMessage != null) {
+                                Platform.runLater(() -> addIncomingMessage(receivedMessage));
+                            }
+                            break;
+
+                        case 1:
+                            BufferedImage receivedImage = chatSocket.getImageMessage();
+                            if (receivedImage != null) {
+                                WritableImage imageFx = SwingFXUtils.toFXImage(receivedImage, null);
+                                Platform.runLater(() -> addIncomingImage(imageFx));
+                            }
+                            break;
+
+                        default:
+                            System.err.println("Unknown data type received: " + dataType);
+                            break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            String receivedMessage = chatSocket.getMessage();
-            if (receivedMessage != null) {
-                Platform.runLater(() -> addIncomingMessage(receivedMessage));
-            }
-        }
+//            String receivedMessage = chatSocket.getMessage();
+//            if (receivedMessage != null) {
+//                Platform.runLater(() -> addIncomingMessage(receivedMessage));
+//            }
+//            BufferedImage receivedImage = chatSocket.getImageMessage();
+//            if (receivedImage != null) {
+//                WritableImage imageFx = SwingFXUtils.toFXImage(receivedImage, null);
+//                Platform.runLater(() -> addIncomingImage(imageFx));
+//            }
+
     }
 
 

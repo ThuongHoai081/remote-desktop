@@ -5,7 +5,6 @@ import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class SocketClient implements Closeable {
 
@@ -52,12 +51,22 @@ public class SocketClient implements Closeable {
     public void sendMessage(String message) throws  IOException {
             outputStream.writeUTF(message);
     }
+    public void sendType(Integer n) throws  IOException {
+        outputStream.writeInt(n);
+    }
 
     public String getMessage() {
         try {
             return inputStream.readUTF();
         } catch (IOException e) {
             return null;
+        }
+    }
+    public int getType() {
+        try {
+            return inputStream.readInt();
+        } catch (IOException e) {
+            return -1;
         }
     }
 

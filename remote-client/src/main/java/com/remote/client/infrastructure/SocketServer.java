@@ -75,6 +75,21 @@ public class SocketServer implements Closeable {
             System.err.println("Error sending message: " + e.getMessage());
         }
     }
+    public void sendType(Integer n) {
+        try {
+            outputStream.writeInt(n);
+        } catch (IOException e) {
+            System.err.println("Error sending message: " + e.getMessage());
+        }
+    }
+    public int getType() {
+        try {
+            return inputStream.readInt();
+        } catch (IOException e) {
+            return -1;
+        }
+    }
+
 
     // Gửi hình ảnh qua kết nối
     public void sendImage(BufferedImage image) {

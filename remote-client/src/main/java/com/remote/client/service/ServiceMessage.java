@@ -30,9 +30,9 @@ public class ServiceMessage {
     public void sendMessage(String message) {
         try {
             if (isClientMode && connectClient != null) {
-                connectClient.sendChatMessage("CHAT:" + message);
+                connectClient.sendChatMessage(message);
             } else if (!isClientMode && connectServer != null) {
-                connectServer.sendChatMessage("CHAT:" + message);
+                connectServer.sendChatMessage(message);
             }
         } catch (IOException e) {
             System.err.println("Error sending message: " + e.getMessage());

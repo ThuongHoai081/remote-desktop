@@ -83,6 +83,7 @@ public void initiateFrameSending() {
 
     public void sendImageMessage(BufferedImage image) throws IOException {
         if (chatSocket != null) {
+            chatSocket.sendType(1);
             chatSocket.sendImageMessage(image);
         }
     }
@@ -90,6 +91,7 @@ public void initiateFrameSending() {
     public void sendChatMessage(String message) throws IOException {
         // Chỉ sử dụng socket chat khi đang ở chế độ Client
         if (chatSocket != null) {
+            chatSocket.sendType(0);
             chatSocket.sendMessage(message);  // Gửi qua socket chat
         }
     }
