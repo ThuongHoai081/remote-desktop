@@ -153,26 +153,67 @@ public class SocketClient implements Closeable {
         return in.readLine();
     }
 
-    public BufferedImage getImageMessage() {
-        try {
-            byte[] bytes = new byte[1024 * 1024];
-            int count = 0;
-            do {
-                count+= socket.getInputStream().read(bytes, count, bytes.length - count);
+//    public BufferedImage getImageMessage() {
+//        try {
+//            byte[] bytes = new byte[1024 * 1024];
+//            int count = 0;
+//            do {
+//                count+= socket.getInputStream().read(bytes, count, bytes.length - count);
+//
+//            } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
+//
+//            BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+//
+//            return image;
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            return null;
+//        }
+//    }
+public BufferedImage getImageMessage() {
+    try {
+        byte[] bytes = new byte[1024 * 1024]; // 1 MB buffer
+        int count = 0;
+        int bytesRead;
 
-            } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
+        while ((bytesRead = socket.getInputStream().read(bytes, count, bytes.length - count)) != -1) {
+            count += bytesRead;
 
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
+            // Kiểm tra khi nào đã nhận đủ dữ liệu
+            if (count >= bytes.length) {
+                System.err.println("Error: Image size exceeds buffer limit.");
+                return null;
+            }
+        }
 
-            return image;
-        } catch (Exception e) {
-            System.out.println(e);
+        // Nếu dữ liệu không đủ cho ảnh, trả về null
+        if (count == 0) {
+            System.err.println("Error: No image data received.");
             return null;
         }
+
+        // Đọc ảnh từ byte array
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes, 0, count);
+        BufferedImage image = ImageIO.read(byteArrayInputStream);
+
+        if (image == null) {
+            System.err.println("Error: Unsupported image format.");
+            return null;
+        }
+
+        return image;
+    } catch (IOException e) {
+        System.err.println("Error receiving image: " + e.getMessage());
+        return null;
+    } catch (Exception e) {
+        System.err.println("Unexpected error: " + e.getMessage());
+        return null;
     }
+}
+
     public void sendImageMessage(BufferedImage image) {
         try {
-            ImageIO.write(image, "jpeg", socket.getOutputStream());
+            ImageIO.write(image, "png", socket.getOutputStream());
         } catch (IOException e) {
             System.err.println("Error sending image: " + e.getMessage());
         }

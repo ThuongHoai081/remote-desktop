@@ -131,31 +131,33 @@ public class SocketServer implements Closeable {
             byte[] bytes = new byte[1024 * 1024]; // 1 MB buffer
             int count = 0;
             int bytesRead;
-            boolean isJPEGComplete = false;
 
             while ((bytesRead = socket.getInputStream().read(bytes, count, bytes.length - count)) != -1) {
                 count += bytesRead;
 
-                // Check for JPEG end marker (0xFFD9)
-                if (count > 4 && bytes[count - 2] == (byte) 0xFF && bytes[count - 1] == (byte) 0xD9) {
-                    isJPEGComplete = true;
-                    break;
-                }
-
-                // Check for buffer overflow
+                // Kiểm tra khi nào đã nhận đủ dữ liệu
                 if (count >= bytes.length) {
                     System.err.println("Error: Image size exceeds buffer limit.");
                     return null;
                 }
             }
 
-            if (!isJPEGComplete) {
-                System.err.println("Error: Incomplete image data received.");
+            // Nếu dữ liệu không đủ cho ảnh, trả về null
+            if (count == 0) {
+                System.err.println("Error: No image data received.");
                 return null;
             }
 
-            // Read the image from the received bytes
-            return ImageIO.read(new ByteArrayInputStream(bytes, 0, count));
+            // Đọc ảnh từ byte array
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes, 0, count);
+            BufferedImage image = ImageIO.read(byteArrayInputStream);
+
+            if (image == null) {
+                System.err.println("Error: Unsupported image format.");
+                return null;
+            }
+
+            return image;
         } catch (IOException e) {
             System.err.println("Error receiving image: " + e.getMessage());
             return null;
