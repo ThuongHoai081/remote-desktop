@@ -21,7 +21,7 @@ public class VoiceChatServer extends Thread{
         try{
             InputStream in = streamingSocket.getInputStream();
             //audioformat
-            AudioFormat format = new AudioFormat(16000, 8, 2, true, true);
+            AudioFormat format = new AudioFormat(44100, 12, 2, true, false);
             //audioformat
             //selecting and strating speakers
             DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
@@ -41,16 +41,22 @@ public class VoiceChatServer extends Thread{
             microphone.start();
 
 
-            byte[] bufferForOutput = new byte[1024];
+            byte[] bufferForOutput = new byte[4096];
             int bufferVariableForOutput = 0;
 
-            byte[] bufferForInput = new byte[1024];
+            byte[] bufferForInput = new byte[4096];
             int bufferVariableForInput;
 
-            while((bufferVariableForInput = in.read(bufferForInput)) > 0  || (bufferVariableForOutput=microphone.read(bufferForOutput, 0, 1024)) > 0) {
-                out.write(bufferForOutput, 0, bufferVariableForOutput);
-                speakers.write(bufferForInput, 0, bufferVariableForInput);
+            while (true) {
+                // Đọc dữ liệu từ microphone và gửi qua socket
+                if ((bufferVariableForOutput = microphone.read(bufferForOutput, 0, 1024)) > 0) {
+                    out.write(bufferForOutput, 0, bufferVariableForOutput);
+                }
 
+                // Nhận dữ liệu từ socket và phát qua speaker
+                if ((bufferVariableForInput = in.read(bufferForInput)) > 0) {
+                    speakers.write(bufferForInput, 0, bufferVariableForInput);
+                }
             }
         }
         catch(IOException | LineUnavailableException e)

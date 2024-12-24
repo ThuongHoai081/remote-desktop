@@ -49,9 +49,16 @@ public class VoiceChatClient extends Thread{
             byte[] bufferForInput = new byte[4096];
             int bufferVariableForInput;
 
-            while((bufferVariableForInput = in.read(bufferForInput)) > 0  || (bufferVariableForOutput=microphone.read(bufferForOutput, 0, 1024)) > 0) {
-                out.write(bufferForOutput, 0, bufferVariableForOutput);
-                speakers.write(bufferForInput, 0, bufferVariableForInput);
+            while (true) {
+                // Đọc dữ liệu từ microphone và gửi qua socket
+                if ((bufferVariableForOutput = microphone.read(bufferForOutput, 0, 1024)) > 0) {
+                    out.write(bufferForOutput, 0, bufferVariableForOutput);
+                }
+
+                // Nhận dữ liệu từ socket và phát qua speaker
+                if ((bufferVariableForInput = in.read(bufferForInput)) > 0) {
+                    speakers.write(bufferForInput, 0, bufferVariableForInput);
+                }
             }
         }
         catch(IOException | LineUnavailableException e)
