@@ -64,6 +64,19 @@ public class VoiceChatServer extends Thread{
             e.printStackTrace();
         }
     }
+    public void restartMicrophone() throws LineUnavailableException, IOException {
+        if (microphone != null && microphone.isOpen()) {
+            microphone.stop();  // Stop the microphone if it's open
+            microphone.close(); // Close the microphone
+        }
+        // Initialize and start the microphone again
+        AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        microphone = (TargetDataLine) AudioSystem.getLine(info);
+        microphone.open(format);
+        microphone.start();
+        System.out.println("Microphone restarted...");
+    }
 
     public void cleanUp() {
         if (speakers != null) {
@@ -72,6 +85,11 @@ public class VoiceChatServer extends Thread{
         if (microphone != null && microphone.isOpen()) {
             microphone.stop(); // Dừng ghi âm
             microphone.close(); // Đóng microphone
+        }
+        try {
+            restartMicrophone();
+        } catch (LineUnavailableException | IOException e) {
+            e.printStackTrace();
         }
     }
 }
