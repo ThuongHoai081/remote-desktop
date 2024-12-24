@@ -172,48 +172,56 @@ public class SocketClient implements Closeable {
 //    }
 public BufferedImage getImageMessage() {
     try {
-        byte[] bytes = new byte[1024 * 1024]; // 1 MB buffer
-        int count = 0;
-        int bytesRead;
-
-        while ((bytesRead = socket.getInputStream().read(bytes, count, bytes.length - count)) != -1) {
-            count += bytesRead;
-
-            // Kiểm tra khi nào đã nhận đủ dữ liệu
-            if (count >= bytes.length) {
-                System.err.println("Error: Image size exceeds buffer limit.");
-                return null;
-            }
-        }
-
-        // Nếu dữ liệu không đủ cho ảnh, trả về null
-        if (count == 0) {
-            System.err.println("Error: No image data received.");
+        // Đọc kích thước dữ liệu
+        int length = inputStream.readInt();
+        if (length <= 0) {
+            System.err.println("Error: Invalid image size.");
             return null;
         }
 
-        // Đọc ảnh từ byte array
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes, 0, count);
-        BufferedImage image = ImageIO.read(byteArrayInputStream);
+        // Nhận dữ liệu ảnh
+        byte[] imageBytes = new byte[length];
+        int bytesRead = 0;
+        while (bytesRead < length) {
+            int result = inputStream.read(imageBytes, bytesRead, length - bytesRead);
+            if (result == -1) {
+                throw new IOException("Error: Incomplete image data received.");
+            }
+            bytesRead += result;
+        }
+
+        // Chuyển đổi mảng byte thành ảnh
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+        BufferedImage image = ImageIO.read(bais);
 
         if (image == null) {
             System.err.println("Error: Unsupported image format.");
             return null;
         }
 
+        System.out.println("Image received successfully.");
         return image;
     } catch (IOException e) {
         System.err.println("Error receiving image: " + e.getMessage());
         return null;
-    } catch (Exception e) {
-        System.err.println("Unexpected error: " + e.getMessage());
-        return null;
     }
 }
 
+
     public void sendImageMessage(BufferedImage image) {
         try {
-            ImageIO.write(image, "png", socket.getOutputStream());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+
+            // Gửi kích thước dữ liệu
+            outputStream.writeInt(imageBytes.length);
+
+            // Gửi dữ liệu ảnh
+            outputStream.write(imageBytes);
+            outputStream.flush();
+
+            System.out.println("Image sent successfully.");
         } catch (IOException e) {
             System.err.println("Error sending image: " + e.getMessage());
         }
