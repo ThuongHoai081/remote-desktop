@@ -21,7 +21,7 @@ public class VoiceChatServer extends Thread{
         try{
             InputStream in = streamingSocket.getInputStream();
             //audioformat
-            AudioFormat format = new AudioFormat(44100, 12, 2, true, false);
+            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
             //audioformat
             //selecting and strating speakers
             DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
