@@ -67,12 +67,25 @@ public class VoiceChatServer extends Thread{
 
 
     public void cleanUp() {
-        if (speakers != null) {
-            speakers.close();  // Instead of speakers.stop()
+        try {
+            if (speakers != null && speakers.isOpen()) {
+                speakers.stop();  // Dừng loa
+                speakers.close(); // Đóng tài nguyên loa
+                System.out.println("Speakers closed successfully.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error while closing speakers: " + e.getMessage());
         }
-        if (microphone != null && microphone.isOpen()) {
-            microphone.stop(); // Dừng ghi âm
-            microphone.close(); // Đóng microphone
+
+        try {
+            if (microphone != null && microphone.isOpen()) {
+                microphone.stop();  // Dừng microphone
+                microphone.close(); // Đóng tài nguyên microphone
+                System.out.println("Microphone closed successfully.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error while closing microphone: " + e.getMessage());
         }
     }
+
 }
