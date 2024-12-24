@@ -143,9 +143,9 @@ public class MessageViewController implements Initializable {
         if (result == ButtonType.YES) {
             String role = serviceMessage.isClientMode() ? "Client" : "Server";
             if(role.equals("Client")){
-              //  ConnectionInitiatorClient.getInstance().cancelStreaming();
+                ConnectionInitiatorClient.getInstance().cancelStreaming();
             } else {
-              //  ConnectionInitiatorServer.getInstance().cancelStreaming();
+                ConnectionInitiatorServer.getInstance().cancelStreaming();
             }
             voiceChat.setVisible(true);
             cancel.setVisible(false);

@@ -19,6 +19,7 @@ public class ConnectionInitiatorServer {
     private String serverPassword;
     private SocketServer chatSocket;
     private SocketServer streamingSocket;
+    private VoiceChatServer voiceChatServer;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -99,6 +100,9 @@ public void initiateFrameSending() {
         new ReceiveMessageServer(chatSocket,messageContainer);
     }
     public void initializeStreaming() {
-        new VoiceChatServer(streamingSocket);
+        voiceChatServer = new VoiceChatServer(streamingSocket);
+    }
+    public void cancelStreaming(){
+        voiceChatServer.cleanUp();
     }
 }

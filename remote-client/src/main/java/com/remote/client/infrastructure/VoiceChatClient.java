@@ -8,6 +8,8 @@ import java.io.OutputStream;
 public class VoiceChatClient extends Thread{
 
     private SocketClient streamingSocket;
+    private SourceDataLine speakers;
+    private TargetDataLine microphone = null;
 
     public VoiceChatClient(SocketClient streamingSocket) {
         this.streamingSocket = streamingSocket;
@@ -17,8 +19,6 @@ public class VoiceChatClient extends Thread{
     @Override
     public void run() {
         try{
-            SourceDataLine speakers;
-            TargetDataLine microphone = null;
             InputStream in = streamingSocket.getInputStream();
             //audioformat
             AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
@@ -64,6 +64,15 @@ public class VoiceChatClient extends Thread{
         catch(IOException | LineUnavailableException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    public void cleanUp() {
+        if (speakers != null) {
+            speakers.close();  // Instead of speakers.stop()
+        }
+        if (microphone != null) {
+            microphone.close();  // Instead of microphone.stop()
         }
     }
 }

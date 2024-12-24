@@ -27,7 +27,7 @@
                               <Image url="@image/voice-message.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="cancel" fitHeight="38.0" fitWidth="43.0" layoutX="14.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true" styleClass="cursor" visible="false">
+                        <ImageView fx:id="cancel" fitHeight="38.0" fitWidth="43.0" layoutX="14.0" layoutY="80.0" onMouseClicked="#cancelVoiceChat" pickOnBounds="true" preserveRatio="true" styleClass="cursor" visible="false">
                            <image>
                               <Image url="@image/cancel.png" />
                            </image>
