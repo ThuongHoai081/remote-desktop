@@ -21,7 +21,7 @@ public class VoiceChatServer extends Thread{
         try{
             InputStream in = streamingSocket.getInputStream();
             //audioformat
-            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+            AudioFormat format = new AudioFormat(16000, 16, 1, true, true);
             //audioformat
             //selecting and strating speakers
             DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
@@ -70,7 +70,7 @@ public class VoiceChatServer extends Thread{
             microphone.close(); // Close the microphone
         }
         // Initialize and start the microphone again
-        AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+        AudioFormat format = new AudioFormat(16000, 16, 1, true, true);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         microphone = (TargetDataLine) AudioSystem.getLine(info);
         microphone.open(format);
