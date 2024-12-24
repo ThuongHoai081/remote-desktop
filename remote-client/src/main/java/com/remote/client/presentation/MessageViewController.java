@@ -140,7 +140,7 @@ public class MessageViewController implements Initializable {
         ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
 
         // Kiểm tra người dùng chọn Yes hay No
-        if (result == ButtonType.YES) {
+        if (result == ButtonType.OK) {
             String role = serviceMessage.isClientMode() ? "Client" : "Server";
             if(role.equals("Client")){
                 ConnectionInitiatorClient.getInstance().cancelStreaming();

@@ -69,8 +69,9 @@ public class VoiceChatServer extends Thread{
         if (speakers != null) {
             speakers.close();  // Instead of speakers.stop()
         }
-        if (microphone != null) {
-            microphone.close();  // Instead of microphone.stop()
+        if (microphone != null && microphone.isOpen()) {
+            microphone.stop(); // Dừng ghi âm
+            microphone.close(); // Đóng microphone
         }
     }
 }
