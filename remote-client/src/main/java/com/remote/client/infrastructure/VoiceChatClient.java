@@ -21,7 +21,7 @@ public class VoiceChatClient extends Thread{
         try{
             InputStream in = streamingSocket.getInputStream();
             //audioformat
-            AudioFormat format = new AudioFormat(16000, 16, 1, true, true);
+            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
             //audioformat
             //selecting and strating speakers
             DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
@@ -66,19 +66,7 @@ public class VoiceChatClient extends Thread{
             e.printStackTrace();
         }
     }
-    public void restartMicrophone() throws LineUnavailableException, IOException {
-        if (microphone != null && microphone.isOpen()) {
-            microphone.stop();  // Stop the microphone if it's open
-            microphone.close(); // Close the microphone
-        }
-        // Initialize and start the microphone again
-        AudioFormat format = new AudioFormat(16000, 16, 1, true, true);
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-        microphone = (TargetDataLine) AudioSystem.getLine(info);
-        microphone.open(format);
-        microphone.start();
-        System.out.println("Microphone restarted...");
-    }
+
 
     public void cleanUp() {
         if (speakers != null) {
@@ -88,11 +76,7 @@ public class VoiceChatClient extends Thread{
             microphone.stop(); // Dừng ghi âm
             microphone.close(); // Đóng microphone
             }
-        try {
-            restartMicrophone();
-        } catch (LineUnavailableException | IOException e) {
-            e.printStackTrace();
-        }
+
         }
 
 }
