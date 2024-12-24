@@ -43,12 +43,6 @@ public class ConnectionInitiatorClient {
         return auth.isValid(password);
     }
 
-    public void sendFileMessage(File file) throws IOException {
-        if (chatSocket != null) {
-            chatSocket.sendFile(file);
-        }
-    }
-
     public void sendImageMessage(BufferedImage image) throws IOException {
         if (chatSocket != null) {
             chatSocket.sendImageMessage(image);
@@ -87,6 +81,6 @@ public class ConnectionInitiatorClient {
     }
 
     public void initializeStreaming() {
-        new VoiceChatClient();
+        new VoiceChatClient(streamingSocket);
     }
 }

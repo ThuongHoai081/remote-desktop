@@ -12,7 +12,6 @@ public class ReceiveFrameClient extends Thread {
 
     public ReceiveFrameClient(ImageView imageView) {
         System.out.println("ReceiveFrame");
-
         this.imageView = imageView;
         start();
     }

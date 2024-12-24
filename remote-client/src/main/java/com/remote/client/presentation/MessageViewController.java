@@ -101,28 +101,7 @@ public class MessageViewController implements Initializable {
                 messageContainer.getChildren().add(messageBox);  // Thêm HBox vào container chứa tin nhắn
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
                 serviceMessage.sendImage(bufferedImage);  // Now send the BufferedImage
-            } else if(selectedFile.getName().endsWith(".docx")){
-                HBox fileBox = new HBox();
-                fileBox.setAlignment(Pos.CENTER_RIGHT);
-                fileBox.setStyle("-fx-padding: 10;");
-                fileBox.setSpacing(10);
-
-                javafx.scene.control.Label fileNameLabel = new javafx.scene.control.Label(selectedFile.getName());
-                fileNameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
-                long fileSizeInKB = selectedFile.length() / 1024;
-                javafx.scene.control.Label fileSizeLabel = new javafx.scene.control.Label(fileSizeInKB + " KB");
-                fileSizeLabel.setStyle("-fx-text-fill: white;");
-
-                javafx.scene.control.Button downloadButton = new javafx.scene.control.Button("Tải về");
-                downloadButton.setStyle("-fx-background-color: white; -fx-text-fill: purple; -fx-background-radius: 10;");
-                TextFlow textFlow = new TextFlow(fileNameLabel,fileSizeLabel, downloadButton);
-                textFlow.setStyle("-fx-background-color: #6699FF; -fx-padding: 10; -fx-background-radius: 10;");
-                fileBox.getChildren().addAll( textFlow);
-                messageContainer.getChildren().add(fileBox);
-                serviceMessage.sendFile(selectedFile);
             }
-
         }
     }
 

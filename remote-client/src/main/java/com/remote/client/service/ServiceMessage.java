@@ -38,17 +38,6 @@ public class ServiceMessage {
             System.err.println("Error sending message: " + e.getMessage());
         }
     }
-    public void sendFile(File file) {
-        try {
-            if (isClientMode && connectClient != null) {
-                connectClient.sendFileMessage(file);
-            } else if (!isClientMode && connectServer != null) {
-                connectServer.sendFileMessage(file);
-            }
-        } catch (IOException e) {
-            System.err.println("Error sending message: " + e.getMessage());
-        }
-    }
 
     public void sendImage(BufferedImage image) {
         try {

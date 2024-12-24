@@ -38,13 +38,6 @@ public class ReceiveMessageServer extends Thread {
                 if (receivedMessage != null) {
                     Platform.runLater(() -> addIncomingMessage(receivedMessage));
                 }
-
-          /*  File receivedFile = null;
-            try {
-                receivedFile = chatSocket.receiveFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }*/
         }
     }
 
@@ -60,32 +53,6 @@ public class ReceiveMessageServer extends Thread {
 
         messageBox.getChildren().add(textFlow);
         this.messageContainer.getChildren().add(messageBox);
-    }
-
-    @FXML
-    public void addIncomingFile(File file) {
-        HBox fileBox = new HBox();
-        fileBox.setAlignment(Pos.CENTER_RIGHT);
-        fileBox.setStyle("-fx-padding: 10;");
-        fileBox.setSpacing(10);
-
-        javafx.scene.control.Label fileNameLabel = new javafx.scene.control.Label(file.getName());
-        fileNameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
-        long fileSizeInKB = file.length() / 1024;
-        javafx.scene.control.Label fileSizeLabel = new javafx.scene.control.Label(fileSizeInKB + " KB");
-        fileSizeLabel.setStyle("-fx-text-fill: white;");
-
-        javafx.scene.control.Button downloadButton = new javafx.scene.control.Button("Tải về");
-        downloadButton.setStyle("-fx-background-color: white; -fx-text-fill: purple; -fx-background-radius: 10;");
-        downloadButton.setOnAction(e -> downloadFile(file));
-
-        TextFlow textFlow = new TextFlow(fileNameLabel, fileSizeLabel, downloadButton);
-        textFlow.setStyle("-fx-background-color: #6699FF; -fx-padding: 10; -fx-background-radius: 10;");
-
-        fileBox.getChildren().addAll(textFlow);
-
-        messageContainer.getChildren().add(fileBox);
     }
 
     @FXML
@@ -109,25 +76,4 @@ public class ReceiveMessageServer extends Thread {
         // Add the message box to the message container
         messageContainer.getChildren().add(messageBox);
     }
-
-    private void downloadFile(File file) {
-        // Implement file download functionality here (e.g., saving it to disk, etc.)
-        // For now, we’ll just print a message
-        System.out.println("Downloading file: " + file.getName());
-
-        // For example, saving the file to a specific location:
-        // You can move the file to a desired folder or provide a custom location dialog for the user
-        try {
-            File downloadLocation = new File("C:\\Users\\HP\\Downloads", file.getName());
-            if (!file.renameTo(downloadLocation)) {
-                System.out.println("Error while saving file.");
-            } else {
-                System.out.println("File downloaded successfully: " + downloadLocation.getPath());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }

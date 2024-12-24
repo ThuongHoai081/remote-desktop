@@ -81,12 +81,6 @@ public void initiateFrameSending() {
         return Double.toString(dim.getHeight());
     }
 
-    public void sendFileMessage(File file) throws IOException {
-        if (chatSocket != null) {
-            chatSocket.sendFile(file);
-        }
-    }
-
     public void sendImageMessage(BufferedImage image) throws IOException {
         if (chatSocket != null) {
             chatSocket.sendImageMessage(image);
@@ -103,6 +97,6 @@ public void initiateFrameSending() {
         new ReceiveMessageServer(chatSocket,messageContainer);
     }
     public void initializeStreaming() {
-        new VoiceChatServer();
+        new VoiceChatServer(streamingSocket);
     }
 }
