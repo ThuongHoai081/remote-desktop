@@ -1,4 +1,6 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
+
+import com.remote.client.infrastructure.SocketServer;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;

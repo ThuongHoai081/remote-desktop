@@ -1,5 +1,6 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
 
+import com.remote.client.infrastructure.SocketClient;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;

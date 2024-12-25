@@ -10,9 +10,6 @@ public class SocketServer implements Closeable {
     private static SocketServer instance = null;
     private static SocketServer chatInstance = null;
     private static SocketServer streamingInstance = null;
-    private SocketServer streamingSocket;
-    private SourceDataLine speakers;
-    private TargetDataLine microphone = null;
 
     private int port;
     private ServerSocket serverSocket;
@@ -99,33 +96,26 @@ public class SocketServer implements Closeable {
         }
     }
 
-//    public void sendImageMessage(BufferedImage image) {
-//        try {
-//            ImageIO.write(image, "png", socket.getOutputStream());
-//        } catch (IOException e) {
-//            System.err.println("Error sending image: " + e.getMessage());
-//        }
-//    }
-public void sendImageMessage(BufferedImage image) {
-    try {
-        // Chuyển ảnh thành byte array
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
-        byte[] imageBytes = baos.toByteArray();
+    public void sendImageMessage(BufferedImage image) {
+        try {
+            // Chuyển ảnh thành byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
 
-        // Gửi kích thước dữ liệu
-        outputStream.writeInt(imageBytes.length);
-        outputStream.flush();
+            // Gửi kích thước dữ liệu
+            outputStream.writeInt(imageBytes.length);
+            outputStream.flush();
 
-        // Gửi dữ liệu ảnh
-        outputStream.write(imageBytes);
-        outputStream.flush();
+            // Gửi dữ liệu ảnh
+            outputStream.write(imageBytes);
+            outputStream.flush();
 
-        System.out.println("Image sent successfully.");
-    } catch (IOException e) {
-        System.err.println("Error sending image: " + e.getMessage());
+            System.out.println("Image sent successfully.");
+        } catch (IOException e) {
+            System.err.println("Error sending image: " + e.getMessage());
+        }
     }
-}
 
     public BufferedImage getImage() {
         try {

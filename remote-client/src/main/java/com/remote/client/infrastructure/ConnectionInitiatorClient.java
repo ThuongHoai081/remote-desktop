@@ -1,6 +1,10 @@
 package com.remote.client.infrastructure;
 
 import com.remote.client.HelloApplication;
+import com.remote.client.service.EventSender;
+import com.remote.client.service.ReceiveFrame;
+import com.remote.client.service.ReceiveMessageClient;
+import com.remote.client.service.VoiceChatClient;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,7 +19,6 @@ import java.io.IOException;
 public class ConnectionInitiatorClient {
     private static ConnectionInitiatorClient instance;
     private SocketClient socket;
-    private String clientPassword;
 
     private SocketClient chatSocket;
     private SocketClient streamingSocket;
@@ -61,15 +64,13 @@ public class ConnectionInitiatorClient {
         // Chỉ sử dụng socket chat khi đang ở chế độ Client
         if (chatSocket != null) {
             chatSocket.sendType(0);
-            chatSocket.sendMessage(message);  // Gửi qua socket chat
+            chatSocket.sendMessage(message);
         }
     }
 
     public void initializeStreaming(ImageView imageView) {
         String width = socket.getMessage();
         String height = socket.getMessage();
-       // receiveFrameClient = new ReceiveFrameClient(imageView);
-      //  new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
         if (isConnected) {
             receiveFrameClient = new ReceiveFrame(imageView);
             eventSenderClient = new EventSender(imageView, Double.parseDouble(width), Double.parseDouble(height));

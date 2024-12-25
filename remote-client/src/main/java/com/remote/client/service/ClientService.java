@@ -12,7 +12,6 @@ public class ClientService {
 
     public ClientService(String serverIP, int serverPort) throws IOException {
         this.socketClient = new SocketClient(serverIP, serverPort);
-      //  this.isServerAvailable = socketClient.isServerAvailable(serverIP, serverPort);
     }
 
     public boolean sendToServer(String message, String... param) {
@@ -40,8 +39,4 @@ public class ClientService {
         }
     }
 
-
-    public void closeConnection() throws IOException {
-        socketClient.close();
-    }
 }

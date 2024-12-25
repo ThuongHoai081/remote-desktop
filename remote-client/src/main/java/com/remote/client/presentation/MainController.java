@@ -91,7 +91,7 @@ public class MainController {
 
     public void initialize() {
         try {
-            clientService = new ClientService("localhost", 1234);
+         //   clientService = new ClientService("localhost", 1234);
             Enumeration<NetworkInterface> networkInterfaces = null;
             try {
                 networkInterfaces = NetworkInterface.getNetworkInterfaces();

@@ -1,45 +1,45 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
+
+import com.remote.client.infrastructure.SocketServer;
 
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class VoiceChatClient extends Thread{
-
-    private SocketClient streamingSocket;
+public class VoiceChatServer extends Thread{
+    private SocketServer streamingSocket;
     private SourceDataLine speakers;
     private TargetDataLine microphone = null;
 
-    public VoiceChatClient(SocketClient streamingSocket) {
+    public VoiceChatServer(SocketServer streamingSocket) {
         this.streamingSocket = streamingSocket;
         start();
     }
 
     @Override
     public void run() {
+
         try{
             InputStream in = streamingSocket.getInputStream();
             //audioformat
-            AudioFormat format = new AudioFormat(44100, 16, 1, true, true);
+            AudioFormat format = new AudioFormat(16000, 16, 1, true, true);
             //audioformat
             //selecting and strating speakers
             DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-            speakers = (SourceDataLine)AudioSystem.getLine(dataLineInfo);
+            speakers = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
             speakers.open(format);
-            System.out.println("Starting speakers...");
             speakers.start();
 
             //for sending
             OutputStream out = null;
-            out = streamingSocket.getOutPutStream();
+            out = streamingSocket.getOutputStream();
 
             //selecting and starting microphone
             microphone = AudioSystem.getTargetDataLine(format);
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             microphone = (TargetDataLine) AudioSystem.getLine(info);
             microphone.open(format);
-            System.out.println("Starting microphone...");
             microphone.start();
 
 
@@ -56,7 +56,6 @@ public class VoiceChatClient extends Thread{
                         out.write(bufferForOutput, 0, bufferVariableForOutput);
                     }
                 }
-
 
                 // Nhận dữ liệu từ socket và phát qua speaker
                 if ((bufferVariableForInput = in.read(bufferForInput)) > 0 && speakers!=null) {

@@ -1,5 +1,6 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
 
+import com.remote.client.infrastructure.SocketClient;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -13,7 +14,7 @@ public class EventSender {
     private double widthServer, heightServer, widthClient, heightClient;
     private boolean isSendingEvents = true;
 
-    EventSender(ImageView panel, double widthServer, double heightServer) {
+    public EventSender(ImageView panel, double widthServer, double heightServer) {
         System.out.println("EventSender");
         this.socket = SocketClient.getInstance();
         this.panel = panel;

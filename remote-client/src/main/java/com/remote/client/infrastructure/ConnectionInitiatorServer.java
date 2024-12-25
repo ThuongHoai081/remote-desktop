@@ -1,6 +1,10 @@
 package com.remote.client.infrastructure;
 
 import com.remote.client.HelloApplication;
+import com.remote.client.service.ReceiveEvents;
+import com.remote.client.service.ReceiveMessageServer;
+import com.remote.client.service.SendFrame;
+import com.remote.client.service.VoiceChatServer;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

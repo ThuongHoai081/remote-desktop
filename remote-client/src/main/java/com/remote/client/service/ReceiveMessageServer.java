@@ -1,5 +1,6 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
 
+import com.remote.client.infrastructure.SocketServer;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -56,21 +57,6 @@ public class ReceiveMessageServer extends Thread {
             e.printStackTrace();
         }
     }
-//    public void run() {
-//        while(true) {
-//            String receivedMessage = chatSocket.getMessage();
-//            if (receivedMessage != null) {
-//                Platform.runLater(() -> addIncomingMessage(receivedMessage));
-//            }
-////            BufferedImage receivedImage = chatSocket.getImageMessage();
-////            if (receivedImage != null) {
-////                WritableImage imageFx = SwingFXUtils.toFXImage(receivedImage, null);
-////                Platform.runLater(() -> addIncomingImage(imageFx));
-////            }
-//
-//
-//        }
-//    }
 
     @FXML
     public void addIncomingMessage(String message) {

@@ -1,4 +1,6 @@
-package com.remote.client.infrastructure;
+package com.remote.client.service;
+
+import com.remote.client.infrastructure.SocketServer;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -78,7 +80,7 @@ public class ReceiveEvents extends Thread {
         }
     }
     public void stopReceiveEventServer() {
-        running = false; // Đặt cờ để thoát vòng lặp
-        this.interrupt(); // Ngắt luồng nếu đang chờ
+        running = false;
+        this.interrupt();
     }
 }
