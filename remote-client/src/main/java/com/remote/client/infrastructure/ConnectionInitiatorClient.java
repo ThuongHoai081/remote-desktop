@@ -1,6 +1,6 @@
 package com.remote.client.infrastructure;
 
-import com.remote.client.HelloApplication;
+import com.remote.client.RemoteApplication;
 import com.remote.client.service.EventSender;
 import com.remote.client.service.ReceiveFrame;
 import com.remote.client.service.ReceiveMessageClient;
@@ -78,7 +78,7 @@ public class ConnectionInitiatorClient {
 
         Platform.runLater(() -> {
             try {
-                Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("MessageView.fxml"));
+                Parent messagePane = FXMLLoader.load(RemoteApplication.class.getResource("MessageView.fxml"));
                 Stage messageStage = new Stage();
                 Scene messageScene = new Scene(messagePane);
                 messageStage.setScene(messageScene);

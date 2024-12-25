@@ -1,6 +1,6 @@
 package com.remote.client.presentation;
 
-import com.remote.client.HelloApplication;
+import com.remote.client.RemoteApplication;
 import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
 import com.remote.client.service.ServiceMessage;
@@ -157,7 +157,7 @@ public class MessageViewController implements Initializable {
                 closeWindow();
                 try {
                     // Tải giao diện chính sau khi kết thúc kết nối
-                    Parent messagePane = FXMLLoader.load(HelloApplication.class.getResource("main.fxml"));
+                    Parent messagePane = FXMLLoader.load(RemoteApplication.class.getResource("main.fxml"));
                     Stage messageStage = new Stage();
                     Scene messageScene = new Scene(messagePane);
                     messageStage.setScene(messageScene);

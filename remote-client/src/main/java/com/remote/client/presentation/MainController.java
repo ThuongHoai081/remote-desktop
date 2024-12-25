@@ -1,6 +1,6 @@
 package com.remote.client.presentation;
 
-import com.remote.client.HelloApplication;
+import com.remote.client.RemoteApplication;
 import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
 import com.remote.client.service.ClientService;
@@ -167,7 +167,7 @@ public class MainController {
 
         ConnectionInitiatorServer connInit = ConnectionInitiatorServer.getInstance(password);
 
-        AnchorPane fxmlLoader =  FXMLLoader.load(HelloApplication.class.getResource("ScreenView.fxml"));
+        AnchorPane fxmlLoader =  FXMLLoader.load(RemoteApplication.class.getResource("ScreenView.fxml"));
         AnchorPane pane = fxmlLoader;
         rootPane.getChildren().setAll(pane);
     }
@@ -184,7 +184,7 @@ public class MainController {
         // kiểm tra password
         if(connInit.checkPassword(password)) {
 
-            Parent pane = FXMLLoader.load(HelloApplication.class.getResource("ClientFramesView.fxml"));
+            Parent pane = FXMLLoader.load(RemoteApplication.class.getResource("ClientFramesView.fxml"));
 
 
             Stage mainStage = (Stage) connectBtn.getScene().getWindow();
