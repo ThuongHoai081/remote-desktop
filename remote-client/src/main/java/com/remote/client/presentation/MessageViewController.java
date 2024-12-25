@@ -170,8 +170,6 @@ public class MessageViewController implements Initializable {
             } else {
                 ConnectionInitiatorServer.getInstance().cancelStreaming();
             }
-            voiceChat.setVisible(true);
-            cancel.setVisible(false);
         }
     }
 

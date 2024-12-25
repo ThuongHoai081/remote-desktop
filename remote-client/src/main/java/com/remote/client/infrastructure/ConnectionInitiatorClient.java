@@ -21,6 +21,7 @@ public class ConnectionInitiatorClient {
     private SocketClient chatSocket;
     private SocketClient streamingSocket;
     private VoiceChatClient voiceChatClient;
+    private ReceiveFrameClient receiveFrameClient;
 
     private ConnectionInitiatorClient(String serverIp) {
         socket = SocketClient.getInstance(serverIp);
@@ -62,7 +63,7 @@ public class ConnectionInitiatorClient {
     public void initializeStreaming(ImageView imageView) {
         String width = socket.getMessage();
         String height = socket.getMessage();
-        new ReceiveFrameClient(imageView);
+        receiveFrameClient = new ReceiveFrameClient(imageView);
         new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
 
         Platform.runLater(() -> {
@@ -92,6 +93,7 @@ public class ConnectionInitiatorClient {
     }
     public void cancelConnect(){
         try {
+            receiveFrameClient.stop();
             instance = null;
             socket.close();
         } catch (IOException e) {

@@ -20,6 +20,8 @@ public class ConnectionInitiatorServer {
     private SocketServer chatSocket;
     private SocketServer streamingSocket;
     private VoiceChatServer voiceChatServer;
+    private SendFrameServer sendFrameServer;
+    private ReceiveEventsServer receiveEventsServer;
 
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -57,8 +59,8 @@ public class ConnectionInitiatorServer {
 
 public void initiateFrameSending() {
     Rectangle rect = new Rectangle(dim);
-    new SendFrameServer(rect);
-    new ReceiveEventsServer();
+    sendFrameServer = new SendFrameServer(rect);
+    receiveEventsServer = new ReceiveEventsServer();
 
     Platform.runLater(() -> {
         try {
@@ -108,6 +110,8 @@ public void initiateFrameSending() {
 
     public void cancelConnect(){
         try {
+            receiveEventsServer.stop();
+            sendFrameServer.stop();
             serverPassword = null;
             instance = null;
             socket.close();
