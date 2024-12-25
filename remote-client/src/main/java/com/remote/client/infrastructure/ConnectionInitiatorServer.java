@@ -125,6 +125,7 @@ public void initiateFrameSending() {
             receiveEventsServer.stop();
             receiveEventsServer = null;
 
+            sendFrameServer.stopSendFrameServer();
             sendFrameServer.stop();
             sendFrameServer = null;
 

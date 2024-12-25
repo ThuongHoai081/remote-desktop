@@ -10,7 +10,7 @@ public class SendFrameServer extends Thread {
 
     Robot robot = null;
     Rectangle rect;
-
+    private volatile boolean running = true;
     public SendFrameServer(Rectangle rect) {
         System.out.println("SendFrame");
 
@@ -26,7 +26,7 @@ public class SendFrameServer extends Thread {
     }
 
     public void run(){
-        while(true){
+        while(running){
             BufferedImage image = robot.createScreenCapture(rect);
             try {
                 SocketServer.getInstance().sendImage(image);
@@ -40,5 +40,9 @@ public class SendFrameServer extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+    public void stopSendFrameServer() {
+        running = false; // Đặt cờ để thoát vòng lặp
+        this.interrupt(); // Ngắt luồng nếu đang chờ
     }
 }
