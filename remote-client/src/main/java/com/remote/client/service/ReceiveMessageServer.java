@@ -49,7 +49,7 @@ public class ReceiveMessageServer extends Thread {
                         break;
 
                     default:
-                        System.err.println("Unknown data type received: " + dataType);
+                      //  System.err.println("Unknown data type received: " + dataType);
                         break;
                 }
             }
