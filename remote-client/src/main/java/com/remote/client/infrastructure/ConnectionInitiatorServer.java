@@ -136,7 +136,15 @@ public void initiateFrameSending() {
 
             serverPassword = null;
             instance = null;
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
+            if (chatSocket != null) {
+                chatSocket.close();
+            }
+            if (streamingSocket != null) {
+                streamingSocket.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

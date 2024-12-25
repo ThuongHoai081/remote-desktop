@@ -127,6 +127,12 @@ public class ConnectionInitiatorClient {
             if (socket != null) {
                 socket.close();
             }
+            if (chatSocket != null) {
+                chatSocket.close();
+            }
+            if (streamingSocket != null) {
+                streamingSocket.close();
+            }
 
             // Đảm bảo rằng không còn bất kỳ kết nối nào
             isConnected = false;

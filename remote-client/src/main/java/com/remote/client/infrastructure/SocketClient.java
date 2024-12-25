@@ -148,23 +148,6 @@ public class SocketClient implements Closeable {
         return in.readLine();
     }
 
-//    public BufferedImage getImageMessage() {
-//        try {
-//            byte[] bytes = new byte[1024 * 1024];
-//            int count = 0;
-//            do {
-//                count+= socket.getInputStream().read(bytes, count, bytes.length - count);
-//
-//            } while(!(count > 4 && bytes[count - 2] == (byte) -1 && bytes[count - 1] == (byte) -39));
-//
-//            BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
-//
-//            return image;
-//        } catch (Exception e) {
-//            System.out.println(e);
-//            return null;
-//        }
-//    }
 public BufferedImage getImageMessage() {
     try {
         // Đọc kích thước dữ liệu
@@ -248,12 +231,6 @@ public BufferedImage getImageMessage() {
             }
             if (socket != null && !socket.isClosed()) {
                 socket.close();
-            }
-            if (chatInstance != null) {
-                chatInstance.close();
-            }
-            if (streamingInstance != null) {
-                streamingInstance.close();
             }
         } finally {
             instance = null;
