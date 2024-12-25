@@ -27,4 +27,7 @@ public class AuthenticatorClient {
     public String getResult () {
         return socket.getMessage();
     }
+    public void close(){
+        instance = null;
+    }
 }

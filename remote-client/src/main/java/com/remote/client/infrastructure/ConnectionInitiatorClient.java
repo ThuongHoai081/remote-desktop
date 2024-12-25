@@ -25,6 +25,7 @@ public class ConnectionInitiatorClient {
     private EventSenderClient eventSenderClient;
 
     private ReceiveMessageClient receiveMessageClient;
+    private AuthenticatorClient auth;
 
     private boolean isConnected = true;
 
@@ -46,7 +47,7 @@ public class ConnectionInitiatorClient {
     }
 
     public Boolean checkPassword(String password) throws IOException {
-        AuthenticatorClient auth = AuthenticatorClient.getInstance(socket);
+        auth = AuthenticatorClient.getInstance(socket);
         return auth.isValid(password);
     }
 
@@ -121,6 +122,9 @@ public class ConnectionInitiatorClient {
             if(receiveMessageClient != null){
                 receiveMessageClient.stopReceiveMessageClient();
                 receiveMessageClient = null;
+            }
+            if(auth != null){
+                auth.close();
             }
 
             // Đóng kết nối socket và đặt biến isConnected = false để ngừng các tiến trình khác
