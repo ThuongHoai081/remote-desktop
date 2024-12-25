@@ -23,6 +23,8 @@ public class ConnectionInitiatorServer {
     private SendFrameServer sendFrameServer;
     private ReceiveEventsServer receiveEventsServer;
 
+    private boolean isConnected = true;
+
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
     private ConnectionInitiatorServer(String serverPassword) {
@@ -99,17 +101,24 @@ public void initiateFrameSending() {
         }
     }
     public void initializeMessage(VBox messageContainer) {
-        new ReceiveMessageServer(chatSocket,messageContainer);
+        if (isConnected) {
+            new ReceiveMessageServer(chatSocket,messageContainer);
+        }
     }
     public void initializeStreaming() {
-        voiceChatServer = new VoiceChatServer(streamingSocket);
+        if (isConnected) {
+            voiceChatServer = new VoiceChatServer(streamingSocket);
+        }
     }
     public void cancelStreaming(){
-        voiceChatServer.cleanUp();
+        if (isConnected) {
+            voiceChatServer.cleanUp();
+        }
     }
 
     public void cancelConnect(){
         try {
+            isConnected = false;
             receiveEventsServer.stop();
             sendFrameServer.stop();
             serverPassword = null;

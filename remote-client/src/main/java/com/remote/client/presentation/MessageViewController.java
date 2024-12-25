@@ -147,9 +147,9 @@ public class MessageViewController implements Initializable {
             } else {
                 ConnectionInitiatorServer.getInstance().cancelConnect();
             }
-            voiceChat.setVisible(false);
-            cancel.setVisible(true);
+
         }
+
     }
 
     @FXML
@@ -170,7 +170,10 @@ public class MessageViewController implements Initializable {
             } else {
                 ConnectionInitiatorServer.getInstance().cancelStreaming();
             }
+            voiceChat.setVisible(true);
+            cancel.setVisible(false);
         }
+
     }
 
     @FXML

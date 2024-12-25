@@ -22,6 +22,9 @@ public class ConnectionInitiatorClient {
     private SocketClient streamingSocket;
     private VoiceChatClient voiceChatClient;
     private ReceiveFrameClient receiveFrameClient;
+    private EventSenderClient eventSenderClient;
+
+    private boolean isConnected = true;
 
     private ConnectionInitiatorClient(String serverIp) {
         socket = SocketClient.getInstance(serverIp);
@@ -63,8 +66,12 @@ public class ConnectionInitiatorClient {
     public void initializeStreaming(ImageView imageView) {
         String width = socket.getMessage();
         String height = socket.getMessage();
-        receiveFrameClient = new ReceiveFrameClient(imageView);
-        new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
+       // receiveFrameClient = new ReceiveFrameClient(imageView);
+      //  new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
+        if (isConnected) {
+            receiveFrameClient = new ReceiveFrameClient(imageView);
+            eventSenderClient = new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
+        }
 
         Platform.runLater(() -> {
             try {
@@ -81,21 +88,41 @@ public class ConnectionInitiatorClient {
     }
 
     public void initializeMessage(VBox messageContainer) {
-        new ReceiveMessageClient(chatSocket,messageContainer);
+        if (isConnected) {
+            new ReceiveMessageClient(chatSocket, messageContainer);
+        }
     }
 
     public void initializeStreaming() {
-        voiceChatClient = new VoiceChatClient(streamingSocket);
+        if (isConnected) {
+            voiceChatClient = new VoiceChatClient(streamingSocket);
+        }
     }
 
     public void cancelStreaming(){
-        voiceChatClient.cleanUp();
+        if (isConnected && voiceChatClient != null) {
+            voiceChatClient.cleanUp();
+        }
     }
-    public void cancelConnect(){
+    public void cancelConnect() {
         try {
-            receiveFrameClient.stop();
+            // Ngừng tất cả các tiến trình gửi nhận sự kiện
+            if (eventSenderClient != null) {
+                eventSenderClient.stop();
+            }
+            if (receiveFrameClient != null) {
+                receiveFrameClient.stop();
+            }
+
+            // Đóng kết nối socket và đặt biến isConnected = false để ngừng các tiến trình khác
+            if (socket != null) {
+                socket.close();
+            }
+
+            // Đảm bảo rằng không còn bất kỳ kết nối nào
+            isConnected = false;
+
             instance = null;
-            socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
