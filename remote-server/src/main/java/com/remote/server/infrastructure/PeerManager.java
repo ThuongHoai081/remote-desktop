@@ -30,7 +30,7 @@ public class PeerManager {
         redisUtils.hset(ip, "password", peerInfo.getPassword());
         redisUtils.addToSet("activePeers", ip);
 
-        System.out.println("Peer mới đăng ký: email: " + email + ", Mật khẩu: " + password);
+        System.out.println("Peer mới đăng ký: email: " + email );
         return true;
     }
 

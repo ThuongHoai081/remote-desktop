@@ -14,9 +14,6 @@ public class SocketClient implements Closeable {
     private Integer port = 4907;
 
     private java.net.Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
-
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
     private static SocketClient chatInstance = null;
@@ -138,11 +135,15 @@ public class SocketClient implements Closeable {
 
 
     public void sendMessageToServer(String message) {
-        out.println(message);
+        try {
+            outputStream.writeUTF(message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String receiveMessageToServer() throws IOException {
-        return in.readLine();
+        return inputStream.readUTF();
     }
 
     public BufferedImage getImageMessage() {
