@@ -12,7 +12,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 public class ReceiveMessageServer extends Thread {
     private final VBox messageContainer;

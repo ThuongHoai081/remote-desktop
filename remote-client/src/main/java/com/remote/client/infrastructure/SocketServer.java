@@ -5,7 +5,6 @@ import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 
 public class SocketServer implements Closeable {
     private static SocketServer instance = null;
@@ -17,7 +16,7 @@ public class SocketServer implements Closeable {
 
     private int port;
     private ServerSocket serverSocket;
-    private Socket socket;
+    private java.net.Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
 

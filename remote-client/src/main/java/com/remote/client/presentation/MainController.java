@@ -3,7 +3,6 @@ package com.remote.client.presentation;
 import com.remote.client.HelloApplication;
 import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
-import com.remote.client.infrastructure.SocketClient;
 import com.remote.client.service.ClientService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

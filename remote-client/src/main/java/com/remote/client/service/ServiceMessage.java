@@ -4,7 +4,6 @@ import com.remote.client.infrastructure.ConnectionInitiatorClient;
 import com.remote.client.infrastructure.ConnectionInitiatorServer;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class ServiceMessage {

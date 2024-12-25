@@ -2,17 +2,17 @@ package com.remote.client.infrastructure;
 
 import java.io.IOException;
 
-public class AuthenticatorClient {
-    private static AuthenticatorClient instance = null;
+public class AuthenticatorPeer {
+    private static AuthenticatorPeer instance = null;
     private SocketClient socket;
 
-    private AuthenticatorClient (SocketClient socket) {
+    private AuthenticatorPeer(SocketClient socket) {
         this.socket = socket;
     }
 
-    public static AuthenticatorClient getInstance (SocketClient socket) {
+    public static AuthenticatorPeer getInstance (SocketClient socket) {
         if (instance == null) {
-            instance = new AuthenticatorClient(socket);
+            instance = new AuthenticatorPeer(socket);
         }
         return instance;
     }

@@ -8,13 +8,13 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-public class ReceiveEventsServer extends Thread {
+public class ReceiveEvents extends Thread {
 
     Robot robot;
     private SocketServer socket;
     private volatile boolean running = true;
 
-    public ReceiveEventsServer()  {
+    public ReceiveEvents()  {
         System.out.println("ReceiveEvents");
 
         try {

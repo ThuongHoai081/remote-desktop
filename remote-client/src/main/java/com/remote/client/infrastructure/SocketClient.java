@@ -4,7 +4,6 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.Socket;
 
 public class SocketClient implements Closeable {
 
@@ -14,7 +13,7 @@ public class SocketClient implements Closeable {
 
     private Integer port = 4907;
 
-    private Socket socket;
+    private java.net.Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
@@ -28,7 +27,7 @@ public class SocketClient implements Closeable {
 
     public SocketClient(String serverIp)  {
         try {
-            socket = new Socket(serverIp, port);
+            socket = new java.net.Socket(serverIp, port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
             correctIP = true;
@@ -126,9 +125,7 @@ public class SocketClient implements Closeable {
 
     public boolean connect(String host, int port) {
         try {
-            socket = new Socket(host, port);
-//            out = new PrintWriter(socket.getOutputStream(), true);
-//            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socket = new java.net.Socket(host, port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
             return true;
@@ -148,42 +145,42 @@ public class SocketClient implements Closeable {
         return in.readLine();
     }
 
-public BufferedImage getImageMessage() {
-    try {
-        // Đọc kích thước dữ liệu
-        int length = inputStream.readInt();
-        if (length <= 0) {
-            System.err.println("Error: Invalid image size.");
-            return null;
-        }
-
-        // Nhận dữ liệu ảnh
-        byte[] imageBytes = new byte[length];
-        int bytesRead = 0;
-        while (bytesRead < length) {
-            int result = inputStream.read(imageBytes, bytesRead, length - bytesRead);
-            if (result == -1) {
-                throw new IOException("Error: Incomplete image data received.");
+    public BufferedImage getImageMessage() {
+        try {
+            // Đọc kích thước dữ liệu
+            int length = inputStream.readInt();
+            if (length <= 0) {
+                System.err.println("Error: Invalid image size.");
+                return null;
             }
-            bytesRead += result;
-        }
 
-        // Chuyển đổi mảng byte thành ảnh
-        ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-        BufferedImage image = ImageIO.read(bais);
+            // Nhận dữ liệu ảnh
+            byte[] imageBytes = new byte[length];
+            int bytesRead = 0;
+            while (bytesRead < length) {
+                int result = inputStream.read(imageBytes, bytesRead, length - bytesRead);
+                if (result == -1) {
+                    throw new IOException("Error: Incomplete image data received.");
+                }
+                bytesRead += result;
+            }
 
-        if (image == null) {
-            System.err.println("Error: Unsupported image format.");
+            // Chuyển đổi mảng byte thành ảnh
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            BufferedImage image = ImageIO.read(bais);
+
+            if (image == null) {
+                System.err.println("Error: Unsupported image format.");
+                return null;
+            }
+
+            System.out.println("Image received successfully.");
+            return image;
+        } catch (IOException e) {
+            System.err.println("Error receiving image: " + e.getMessage());
             return null;
         }
-
-        System.out.println("Image received successfully.");
-        return image;
-    } catch (IOException e) {
-        System.err.println("Error receiving image: " + e.getMessage());
-        return null;
     }
-}
 
 
     public void sendImageMessage(BufferedImage image) {

@@ -1,10 +1,10 @@
 package com.remote.client.infrastructure;
 
-public class AuthenticatorServer {
+public class Authenticator {
     private SocketServer socket;
     private String ServerPassword;
 
-    public AuthenticatorServer(SocketServer socket, String ServerPassword) {
+    public Authenticator(SocketServer socket, String ServerPassword) {
         this.ServerPassword = ServerPassword;
         this.socket = socket;
     }

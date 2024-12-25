@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class ConnectionInitiatorServer {
@@ -20,8 +19,8 @@ public class ConnectionInitiatorServer {
     private SocketServer chatSocket;
     private SocketServer streamingSocket;
     private VoiceChatServer voiceChatServer;
-    private SendFrameServer sendFrameServer;
-    private ReceiveEventsServer receiveEventsServer;
+    private SendFrame sendFrameServer;
+    private ReceiveEvents receiveEventsServer;
 
     private ReceiveMessageServer receiveMessageServer;
 
@@ -49,7 +48,7 @@ public class ConnectionInitiatorServer {
         socket = SocketServer.getInstance();
         chatSocket = SocketServer.getChatInstance(5000);
         streamingSocket = SocketServer.getStreamingInstance(6000);
-        AuthenticatorServer auth = new AuthenticatorServer(socket, serverPassword);
+        Authenticator auth = new Authenticator(socket, serverPassword);
         System.out.println("ServerPassword:" + serverPassword);
         while(!auth.isValid()) {
             socket.sendMessage("invalid");
@@ -63,8 +62,8 @@ public class ConnectionInitiatorServer {
 
 public void initiateFrameSending() {
     Rectangle rect = new Rectangle(dim);
-    sendFrameServer = new SendFrameServer(rect);
-    receiveEventsServer = new ReceiveEventsServer();
+    sendFrameServer = new SendFrame(rect);
+    receiveEventsServer = new ReceiveEvents();
 
     Platform.runLater(() -> {
         try {

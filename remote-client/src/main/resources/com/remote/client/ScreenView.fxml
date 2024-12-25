@@ -27,16 +27,6 @@
                         </Label>
                     </children>
                 </VBox>
-            <ImageView fitHeight="41.0" fitWidth="40.0" onMouseClicked="#stop" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@image/logout.png" />
-               </image>
-            </ImageView>
-            <Label text="Stop listening">
-               <font>
-                  <Font name="System Italic" size="13.0" />
-               </font>
-            </Label>
             </children>
         </VBox>
     </children>

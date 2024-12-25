@@ -7,12 +7,12 @@ import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
 
-public class ReceiveFrameClient extends Thread {
+public class ReceiveFrame extends Thread {
 
     private ImageView imageView;
     private volatile boolean running = true;
 
-    public ReceiveFrameClient(ImageView imageView) {
+    public ReceiveFrame(ImageView imageView) {
         System.out.println("ReceiveFrame");
         this.imageView = imageView;
         start();

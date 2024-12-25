@@ -6,14 +6,14 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
-public class EventSenderClient {
+public class EventSender {
 
     private SocketClient socket;
     private ImageView panel;
     private double widthServer, heightServer, widthClient, heightClient;
     private boolean isSendingEvents = true;
 
-    EventSenderClient(ImageView panel, double widthServer, double heightServer) {
+    EventSender(ImageView panel, double widthServer, double heightServer) {
         System.out.println("EventSender");
         this.socket = SocketClient.getInstance();
         this.panel = panel;

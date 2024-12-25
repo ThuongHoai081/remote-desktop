@@ -6,12 +6,12 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 
-public class SendFrameServer extends Thread {
+public class SendFrame extends Thread {
 
     Robot robot = null;
     Rectangle rect;
     private volatile boolean running = true;
-    public SendFrameServer(Rectangle rect) {
+    public SendFrame(Rectangle rect) {
         System.out.println("SendFrame");
 
         this.rect = rect;

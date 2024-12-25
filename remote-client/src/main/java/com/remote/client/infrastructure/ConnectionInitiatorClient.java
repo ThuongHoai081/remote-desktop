@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class ConnectionInitiatorClient {
@@ -21,11 +20,11 @@ public class ConnectionInitiatorClient {
     private SocketClient chatSocket;
     private SocketClient streamingSocket;
     private VoiceChatClient voiceChatClient;
-    private ReceiveFrameClient receiveFrameClient;
-    private EventSenderClient eventSenderClient;
+    private ReceiveFrame receiveFrameClient;
+    private EventSender eventSenderClient;
 
     private ReceiveMessageClient receiveMessageClient;
-    private AuthenticatorClient auth;
+    private AuthenticatorPeer auth;
 
     private boolean isConnected = true;
 
@@ -47,7 +46,7 @@ public class ConnectionInitiatorClient {
     }
 
     public Boolean checkPassword(String password) throws IOException {
-        auth = AuthenticatorClient.getInstance(socket);
+        auth = AuthenticatorPeer.getInstance(socket);
         return auth.isValid(password);
     }
 
@@ -72,8 +71,8 @@ public class ConnectionInitiatorClient {
        // receiveFrameClient = new ReceiveFrameClient(imageView);
       //  new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
         if (isConnected) {
-            receiveFrameClient = new ReceiveFrameClient(imageView);
-            eventSenderClient = new EventSenderClient(imageView, Double.parseDouble(width), Double.parseDouble(height));
+            receiveFrameClient = new ReceiveFrame(imageView);
+            eventSenderClient = new EventSender(imageView, Double.parseDouble(width), Double.parseDouble(height));
         }
 
         Platform.runLater(() -> {
