@@ -3,6 +3,7 @@ package com.remote.client.infrastructure;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
 
@@ -41,6 +42,15 @@ public class ReceiveFrameClient extends Thread {
     }
     public void stopReceiveFrameClient() {
         running = false; // Đặt cờ để thoát vòng lặp
+        closeWindow();
         this.interrupt(); // Ngắt luồng nếu đang chờ
+    }
+    private void closeWindow() {
+        if (imageView.getScene() != null) {
+            Stage stage = (Stage) imageView.getScene().getWindow();
+            if (stage != null) {
+                stage.close();
+            }
+        }
     }
 }

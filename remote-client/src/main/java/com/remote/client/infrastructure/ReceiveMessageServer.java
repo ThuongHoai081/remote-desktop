@@ -17,6 +17,7 @@ import java.io.File;
 public class ReceiveMessageServer extends Thread {
     private final VBox messageContainer;
     private final SocketServer chatSocket;
+    private volatile boolean running = true;
 
     public ReceiveMessageServer(SocketServer chatSocket, VBox messageContainer) {
         System.out.println("ReceiveMessage");
@@ -28,7 +29,7 @@ public class ReceiveMessageServer extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (running) {
                 int dataType = chatSocket.getType();
 
                 switch (dataType) {
@@ -106,5 +107,9 @@ public class ReceiveMessageServer extends Thread {
 
         // Add the message box to the message container
         messageContainer.getChildren().add(messageBox);
+    }
+    public void stopReceiveMessageServer() {
+        running = false; // Đặt cờ để thoát vòng lặp
+        this.interrupt(); // Ngắt luồng nếu đang chờ
     }
 }

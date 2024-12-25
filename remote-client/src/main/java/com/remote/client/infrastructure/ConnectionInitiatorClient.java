@@ -24,6 +24,8 @@ public class ConnectionInitiatorClient {
     private ReceiveFrameClient receiveFrameClient;
     private EventSenderClient eventSenderClient;
 
+    private ReceiveMessageClient receiveMessageClient;
+
     private boolean isConnected = true;
 
     private ConnectionInitiatorClient(String serverIp) {
@@ -89,7 +91,7 @@ public class ConnectionInitiatorClient {
 
     public void initializeMessage(VBox messageContainer) {
         if (isConnected) {
-            new ReceiveMessageClient(chatSocket, messageContainer);
+            receiveMessageClient = new ReceiveMessageClient(chatSocket, messageContainer);
         }
     }
 
@@ -115,6 +117,10 @@ public class ConnectionInitiatorClient {
                 receiveFrameClient.stopReceiveFrameClient();
                 receiveFrameClient.stop();
                 receiveFrameClient = null;
+            }
+            if(receiveMessageClient != null){
+                receiveMessageClient.stopReceiveMessageClient();
+                receiveMessageClient = null;
             }
 
             // Đóng kết nối socket và đặt biến isConnected = false để ngừng các tiến trình khác
