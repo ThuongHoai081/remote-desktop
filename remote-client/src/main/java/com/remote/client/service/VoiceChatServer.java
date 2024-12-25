@@ -58,8 +58,10 @@ public class VoiceChatServer extends Thread{
                 }
 
                 // Nhận dữ liệu từ socket và phát qua speaker
-                if ((bufferVariableForInput = in.read(bufferForInput)) > 0 && speakers!=null) {
-                    speakers.write(bufferForInput, 0, bufferVariableForInput);
+                if(speakers != null){
+                    if ((bufferVariableForInput = in.read(bufferForInput)) > 0 ) {
+                        speakers.write(bufferForInput, 0, bufferVariableForInput);
+                    }
                 }
             }
         }
