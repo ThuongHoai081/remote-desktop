@@ -90,4 +90,12 @@ public class ConnectionInitiatorClient {
     public void cancelStreaming(){
         voiceChatClient.cleanUp();
     }
+    public void cancelConnect(){
+        try {
+            instance = null;
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

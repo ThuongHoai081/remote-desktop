@@ -138,12 +138,7 @@ public class SocketClient implements Closeable {
         }
     }
 
-    @Override
-    public void close() throws IOException {
-        if (socket != null && !socket.isClosed()) {
-            socket.close();
-        }
-    }
+
 
     public void sendMessageToServer(String message) {
         out.println(message);
@@ -240,6 +235,25 @@ public BufferedImage getImageMessage() {
             return socket.getInputStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public void close() throws IOException {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } finally {
+            instance = null;
+            chatInstance = null;
+            streamingInstance = null;
+            System.out.println("SocketClient on port " + port + " closed.");
         }
     }
 }

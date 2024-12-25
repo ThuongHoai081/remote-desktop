@@ -212,11 +212,24 @@ public void sendImageMessage(BufferedImage image) {
     // Đóng kết nối
     @Override
     public void close() throws IOException {
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            serverSocket.close();
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+        } finally {
             instance = null;
             chatInstance = null;
-            System.out.println("SocketServer closed");
+            streamingInstance = null;
+            System.out.println("SocketServer on port " + port + " closed.");
         }
     }
 

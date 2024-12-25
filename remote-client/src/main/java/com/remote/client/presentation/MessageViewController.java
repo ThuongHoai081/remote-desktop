@@ -130,6 +130,29 @@ public class MessageViewController implements Initializable {
     }
 
     @FXML
+    private void handleLogout() {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận");
+        alert.setHeaderText("Bạn có chắc chắn không?");
+        alert.setContentText("Chọn Yes để tiếp tục hoặc No để hủy bỏ.");
+
+        // Hiển thị hộp thoại và chờ người dùng chọn
+        ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
+
+        // Kiểm tra người dùng chọn Yes hay No
+        if (result == ButtonType.OK) {
+            String role = serviceMessage.isClientMode() ? "Client" : "Server";
+            if(role.equals("Client")){
+                ConnectionInitiatorClient.getInstance().cancelConnect();
+            } else {
+                ConnectionInitiatorServer.getInstance().cancelConnect();
+            }
+            voiceChat.setVisible(false);
+            cancel.setVisible(true);
+        }
+    }
+
+    @FXML
     private void cancelVoiceChat() {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Xác nhận");

@@ -51,12 +51,15 @@ public class VoiceChatClient extends Thread{
 
             while (true) {
                 // Đọc dữ liệu từ microphone và gửi qua socket
-                if ((bufferVariableForOutput = microphone.read(bufferForOutput, 0, 1024)) > 0) {
-                    out.write(bufferForOutput, 0, bufferVariableForOutput);
+                if(microphone != null){
+                    if ((bufferVariableForOutput = microphone.read(bufferForOutput, 0, 1024)) > 0) {
+                        out.write(bufferForOutput, 0, bufferVariableForOutput);
+                    }
                 }
 
+
                 // Nhận dữ liệu từ socket và phát qua speaker
-                if ((bufferVariableForInput = in.read(bufferForInput)) > 0) {
+                if ((bufferVariableForInput = in.read(bufferForInput)) > 0 && speakers!=null) {
                     speakers.write(bufferForInput, 0, bufferVariableForInput);
                 }
             }
@@ -73,6 +76,7 @@ public class VoiceChatClient extends Thread{
             if (speakers != null && speakers.isOpen()) {
                 speakers.stop();  // Dừng loa
                 speakers.close(); // Đóng tài nguyên loa
+                speakers = null;
                 System.out.println("Speakers closed successfully.");
             }
         } catch (Exception e) {
@@ -83,6 +87,7 @@ public class VoiceChatClient extends Thread{
             if (microphone != null && microphone.isOpen()) {
                 microphone.stop();  // Dừng microphone
                 microphone.close(); // Đóng tài nguyên microphone
+                microphone = null;
                 System.out.println("Microphone closed successfully.");
             }
         } catch (Exception e) {

@@ -105,4 +105,14 @@ public void initiateFrameSending() {
     public void cancelStreaming(){
         voiceChatServer.cleanUp();
     }
+
+    public void cancelConnect(){
+        try {
+            serverPassword = null;
+            instance = null;
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
