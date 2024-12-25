@@ -225,6 +225,12 @@ public void sendImageMessage(BufferedImage image) {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
+            if (chatInstance != null) {
+                chatInstance.close();
+            }
+            if (streamingInstance != null) {
+                streamingInstance.close();
+            }
         } finally {
             instance = null;
             chatInstance = null;

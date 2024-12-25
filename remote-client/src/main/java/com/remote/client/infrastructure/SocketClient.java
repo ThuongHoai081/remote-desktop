@@ -249,6 +249,12 @@ public BufferedImage getImageMessage() {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
+            if (chatInstance != null) {
+                chatInstance.close();
+            }
+            if (streamingInstance != null) {
+                streamingInstance.close();
+            }
         } finally {
             instance = null;
             chatInstance = null;
