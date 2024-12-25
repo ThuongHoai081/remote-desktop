@@ -12,6 +12,7 @@ public class ReceiveEventsServer extends Thread {
 
     Robot robot;
     private SocketServer socket;
+    private volatile boolean running = true;
 
     public ReceiveEventsServer()  {
         System.out.println("ReceiveEvents");
@@ -37,7 +38,7 @@ public class ReceiveEventsServer extends Thread {
     public void run(){
         try {
             System.out.print("here");
-            while(true){
+            while(running){
                 String command = socket.getMessage();
                 System.out.println("Command: " + command);
                 switch (command) {
@@ -75,5 +76,9 @@ public class ReceiveEventsServer extends Thread {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+    }
+    public void stopReceiveEventServer() {
+        running = false; // Đặt cờ để thoát vòng lặp
+        this.interrupt(); // Ngắt luồng nếu đang chờ
     }
 }

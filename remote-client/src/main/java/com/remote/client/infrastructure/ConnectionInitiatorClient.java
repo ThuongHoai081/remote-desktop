@@ -109,9 +109,12 @@ public class ConnectionInitiatorClient {
             // Ngừng tất cả các tiến trình gửi nhận sự kiện
             if (eventSenderClient != null) {
                 eventSenderClient.stop();
+                eventSenderClient = null;
             }
             if (receiveFrameClient != null) {
+                receiveFrameClient.stopReceiveFrameClient();
                 receiveFrameClient.stop();
+                receiveFrameClient = null;
             }
 
             // Đóng kết nối socket và đặt biến isConnected = false để ngừng các tiến trình khác

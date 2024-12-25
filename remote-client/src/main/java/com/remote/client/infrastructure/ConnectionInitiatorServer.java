@@ -119,8 +119,11 @@ public void initiateFrameSending() {
     public void cancelConnect(){
         try {
             isConnected = false;
+            receiveEventsServer.stopReceiveEventServer();
             receiveEventsServer.stop();
+            receiveEventsServer = null;
             sendFrameServer.stop();
+            sendFrameServer = null;
             serverPassword = null;
             instance = null;
             socket.close();

@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 public class ReceiveFrameClient extends Thread {
 
     private ImageView imageView;
+    private volatile boolean running = true;
 
     public ReceiveFrameClient(ImageView imageView) {
         System.out.println("ReceiveFrame");
@@ -17,7 +18,7 @@ public class ReceiveFrameClient extends Thread {
     }
 
     public void run() {
-        while (true) {
+        while (running) {
             try {
                 BufferedImage image = SocketClient.getInstance().getImage();
                 if (image != null) {
@@ -38,5 +39,8 @@ public class ReceiveFrameClient extends Thread {
             }
         }
     }
-
+    public void stopReceiveFrameClient() {
+        running = false; // Đặt cờ để thoát vòng lặp
+        this.interrupt(); // Ngắt luồng nếu đang chờ
+    }
 }
